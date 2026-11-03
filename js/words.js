@@ -22,7 +22,7 @@ export const SEED_WORDS = [
   { id: 'w-pomme', fr: 'la pomme', en: 'apple', emoji: '🍎', g: 'f', cat: 'Nourriture', note: 'A potato is a "pomme de terre" — an apple of the earth!' },
   { id: 'w-eau', fr: "l'eau", en: 'water', emoji: '💧', g: 'f', cat: 'Nourriture', note: 'Feminine. The l\' is "la" squished before a vowel.' },
 
-  { id: 'w-mere', fr: 'la mère', en: 'mother / mom / mum', emoji: '👩', g: 'f', cat: 'Famille', note: 'Kids usually say "maman".' },
+  { id: 'w-mere', fr: 'la mère', en: 'mother / mom', emoji: '👩', g: 'f', cat: 'Famille', note: 'Kids usually say "maman".' },
   { id: 'w-pere', fr: 'le père', en: 'father / dad', emoji: '👨', g: 'm', cat: 'Famille', note: 'Kids usually say "papa".' },
   { id: 'w-frere', fr: 'le frère', en: 'brother', emoji: '👦', g: 'm', cat: 'Famille' },
   { id: 'w-soeur', fr: 'la sœur', en: 'sister', emoji: '👧', g: 'f', cat: 'Famille', note: 'œ is o and e glued together. You can type "oe".' },

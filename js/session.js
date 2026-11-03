@@ -26,7 +26,7 @@ export function peekToday(prog, now) {
  * Snapshot of today's study state for one kid.
  *   due:      ids of cards to review now (learning first, then reviews by due date)
  *   later:    learning cards that come back later today
- *   newR/newP: ids of new cards allowed today (recognise / produce)
+ *   newR/newP: ids of new cards allowed today (recognize / produce)
  *   moreNew:  how many more brand-new words exist beyond today's allowance
  */
 export function todayPlan(prog, words, now) {

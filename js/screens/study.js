@@ -19,6 +19,7 @@ import { PRAISE, COMFORT, COMBO_WORDS, SHOP } from '../data.js';
 import { e, setView, genderClass, genderTag, confirmModal, isModalOpen } from '../ui.js';
 import { distractors, enOf } from './common.js';
 import { pick, shuffle } from '../util.js';
+import { reportHub, refreshHubSettings, hubCode, qualifiesForTicket } from '../hubtickets.js';
 
 export function render({ pid }) {
   const prog = app.prog(pid);
@@ -29,7 +30,7 @@ export function render({ pid }) {
   if (!queue.length) { app.go(`/p/${pid}`); return; }
 
   const session = new Session(queue);
-  const S = { answered: 0, correct: 0, firstTry: 0, wrong: 0, xp: 0, combo: 0, bestCombo: 0, learned: [], start: Date.now(), goalMet: false };
+  const S = { answered: 0, correct: 0, firstTry: 0, wrong: 0, xp: 0, combo: 0, bestCombo: 0, learned: [], start: Date.now(), goalMet: false, hubCards: 0 };
   const flipMode = prog.prefs.mode === 'flip';
   const autoSpeak = prog.prefs.autoSpeak !== false;
   const theme = (SHOP.find(i => i.id === prog.equip.card) || {}).cls || '';
@@ -38,6 +39,22 @@ export function render({ pid }) {
   let advanceTimer = null;
   let keyHandler = null;
   let done = false;
+
+  // Family hub tickets: quiz cards answered right first time (not the check right after an intro)
+  // are turned into ticket events now and then. Without a hub code this does nothing.
+  const reportCards = () => {
+    const cards = S.hubCards;
+    S.hubCards = 0;
+    if (reportHub({ storage: app.storage, prog, pid, cards }) !== null) app.save();
+  };
+  // Without a hub code nothing below runs, so the app behaves exactly as before.
+  const hubOn = !!hubCode(app.storage);
+  const hubTimer = hubOn ? setInterval(reportCards, 3 * 60 * 1000) : null;
+  const onHide = () => { if (document.visibilityState === 'hidden') reportCards(); };
+  if (hubOn) {
+    refreshHubSettings(app.storage);
+    document.addEventListener('visibilitychange', onHide);
+  }
 
   const root = setView(`
     <div class="study-top">
@@ -284,6 +301,8 @@ export function render({ pid }) {
     const rec = recordAnswer(prog, { cardId: id, before, after, correct, combo: S.combo, now, accentWord });
     if (rec.learnedWord) S.learned.push(w);
     if (correct && !rec.recovering) S.firstTry++;
+    // Close typos (correct, graded Hard) still qualify; hinted typed answers and flip mode do not.
+    if (qualifiesForTicket({ mode: prog.prefs.mode, correct, recovering: rec.recovering, fresh: cur.fresh, hints: cur.hints })) S.hubCards++;
     session.answered(id, after, now);
     const gained = reward(pid, { xp: rec.xp, studied: true });
     S.xp += gained;
@@ -350,7 +369,9 @@ export function render({ pid }) {
     if (done) return;
     done = true;
     clearTimeout(advanceTimer);
+    clearInterval(hubTimer);
     keyHandler = null;
+    reportCards();
     if (!S.answered) { app.go(`/p/${pid}`); return; }
     const now = Date.now();
     const left = todayPlan(prog, words, now);
@@ -408,6 +429,9 @@ export function render({ pid }) {
 
   return () => {
     clearTimeout(advanceTimer);
+    clearInterval(hubTimer);
+    document.removeEventListener('visibilitychange', onHide);
+    reportCards();
     document.removeEventListener('keydown', onKey);
     try { speechSynthesis.cancel(); } catch { /* none */ }
   };

@@ -3,7 +3,7 @@
 // so only caches with our own prefix are ever touched.
 
 const PREFIX = 'mamou-fr-';
-const CACHE = PREFIX + 'v1';
+const CACHE = PREFIX + 'v2';
 const SHELL = [
   './',
   'index.html',
@@ -21,6 +21,8 @@ const SHELL = [
   'js/games/escargot.js',
   'js/games/memory.js',
   'js/games/speed.js',
+  'js/hub-client.js',
+  'js/hubtickets.js',
   'js/main.js',
   'js/progress.js',
   'js/screens/carnet.js',

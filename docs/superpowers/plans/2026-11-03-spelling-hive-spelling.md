@@ -1,10 +1,10 @@
-# Spell Hive (Spelling App) Implementation Plan
+# Spelling Hive (Spelling App) Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Spell Hive is a spelling app for grades 5 to 12. The kid hears a word, then a sentence using it, then the word again, and types it. Missed words come back with spaced repetition, the level adapts by grade, and a short definition appears unobtrusively. It syncs progress and reports tickets to the family hub.
+**Goal:** Spelling Hive is a spelling app for grades 5 to 12. The kid hears a word, then a sentence using it, then the word again, and types it. Missed words come back with spaced repetition, the level adapts by grade, and a short definition appears unobtrusively. It syncs progress and reports tickets to the family hub.
 
-**Architecture:** A buildless GitHub Pages app at `nssharpe/spell-hive`. The back end and structure copy Les Cartes de Mamou (`C:\dev\mamou-french`):
+**Architecture:** A buildless GitHub Pages app at `nssharpe/spelling-hive`. The back end and structure copy Les Cartes de Mamou (`C:\dev\mamou-french`):
 - the module layout, store/migrate, and hash router
 - the SM-2 engine (`srs.js`) and the session queue (`session.js`)
 - the three-way merge sync (`sync.js`/`cloud.js`, retargeted at the `sharpe-family` project)
@@ -17,7 +17,7 @@ Its own look is a honeycomb/bee theme with a bee mascot, not the café look.
 
 ## Global Constraints
 
-- No build step. Relative URLs only. localStorage key `spell-hive:v1`. Service-worker cache prefix `spell-hive-` (deletes only its own caches).
+- No build step. Relative URLs only. localStorage key `spelling-hive:v1`. Service-worker cache prefix `spelling-hive-` (deletes only its own caches).
 - Light theme only. WCAG AA for every text/background pair, including hover, disabled and the diff highlighting. Compute the ratios.
 - `<html translate="no">` and `<meta name="google" content="notranslate">`. The answer input uses `autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"`.
 - **Answers are typed** (not tiles). Matching is case-insensitive and trims spaces. Curly apostrophes and hyphens count as `'` and `-`. Nothing else is forgiven.
@@ -29,7 +29,7 @@ Its own look is a honeycomb/bee theme with a bee mascot, not the café look.
   - Units are **first-try correct** words only. A word missed earlier today (the same rule as Les Cartes's `miss` day key) earns 0.
   - Tickets = whole multiples of `rates.spellingWordsPerTicket` (3). The remainder is kept.
   - Rates come from the hub settings (cached), defaulting to 3.
-- **Handoff:** `#hub=<code>&kid=<kidId>` via `readHandoff`, stored under `spell-hive:hub`. "← Hub" goes to `https://nssharpe.github.io/family-hub/#/kid/<kid>`.
+- **Handoff:** `#hub=<code>&kid=<kidId>` via `readHandoff`, stored under `spelling-hive:hub`. "← Hub" goes to `https://nssharpe.github.io/family-hub/#/kid/<kid>`.
 - Word content is written fresh, not copied from published spelling programs.
 
 ## Review Focus
@@ -45,7 +45,7 @@ Its own look is a honeycomb/bee theme with a bee mascot, not the café look.
 ### Task 1: Scaffold from Les Cartes de Mamou
 
 **Files:**
-- Create in `C:\dev\spell-hive\`:
+- Create in `C:\dev\spelling-hive\`:
   - `index.html`, `css/app.css`
   - `js/util.js`, `js/srs.js`, `js/ui.js`, `js/fx.js` (copies)
   - `js/session.js` (adapted: one card per word, id `w:<wordId>`)
@@ -67,12 +67,12 @@ Its own look is a honeycomb/bee theme with a bee mascot, not the café look.
   - `customWords`: last-writer-wins by `u`, with tombstones in `deleted`
 
 - [ ] **Step 1: Write the failing tests.**
-  - The default db has kids `zyler` and `kadyn`, `grade` 5, and the key `spell-hive:v1`.
-  - Sync: two devices practise different words, and both cards merge.
+  - The default db has kids `zyler` and `kadyn`, `grade` 5, and the key `spelling-hive:v1`.
+  - Sync: two devices practice different words, and both cards merge.
   - Sync: `ticketUnits` adds with `remote + (local − base)`.
   - Sync: a custom word deleted on A stays deleted.
 - [ ] **Step 2: Run** `npm test`. Expected: FAIL. Implement. Run again. Expected: PASS.
-- [ ] **Step 3: Commit.** `git init -b main && git add -A && git commit -m "Scaffold Spell Hive from Les Cartes de Mamou's structure"`
+- [ ] **Step 3: Commit.** `git init -b main && git add -A && git commit -m "Scaffold Spelling Hive from Les Cartes de Mamou's structure"`
 
 ### Task 2: Word bank, grades 5–12
 
@@ -150,13 +150,13 @@ Its own look is a honeycomb/bee theme with a bee mascot, not the café look.
   - **Correct:** a cheerful bee reaction. The definition fades in below, quietly in secondary text, with the word shown.
   - **Miss:** the correct word appears with the diff highlighting (`wrong` and `missing` letters marked, `extra` letters shown struck through in her answer). Then "Type it once more" requires a correct retype before "Next".
   - Without a voice, follow the Review Focus #3 fallback.
-- [ ] **Step 3: Build the summary screen:** words right first try, words to practise again, a grade-up or grade-down notice, and "+N tickets sent to the hub" (or the join-the-hub hint).
+- [ ] **Step 3: Build the summary screen:** words right first try, words to practice again, a grade-up or grade-down notice, and "+N tickets sent to the hub" (or the join-the-hub hint).
 - [ ] **Step 4: Build the placement screen** on first open per kid: "Let's find your level".
-- [ ] **Step 5: Look and feel.** Honeycomb and bee identity: hex tiles, honey-gold accents (never used as text colour on light backgrounds), and a friendly bee mascot with a few moods. Use a display font from Google Fonts. Run a contrast pass (compute every token pair, including the diff colours).
+- [ ] **Step 5: Look and feel.** Honeycomb and bee identity: hex tiles, honey-gold accents (never used as text color on light backgrounds), and a friendly bee mascot with a few moods. Use a display font from Google Fonts. Run a contrast pass (compute every token pair, including the diff colors).
 - [ ] **Step 6: Verify in the browser.**
   - Play a session at 375 px and 1280 px. Check a miss and its retype, a capitalized correct answer, and the no-voice fallback (stub `speechSynthesis.getVoices` to return `[]`).
   - With a test hub, 3 first-try words give a 1-ticket spelling event.
   - There's no horizontal overflow and no console errors.
 - [ ] **Step 7: Commit, then publish.**
-  - `gh repo create nssharpe/spell-hive --public --source . --push`
+  - `gh repo create nssharpe/spelling-hive --public --source . --push`
   - Enable Pages and verify the live URL works with `#hub=…&kid=zyler`.

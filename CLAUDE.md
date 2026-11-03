@@ -21,7 +21,7 @@ Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
 |---|---|
 | `js/srs.js` | Anki SM-2: states new/learning/review/relearning, steps 1m/10m, relearn 10m, graduate 1d, easy 4d, ease 2.5 (min 1.3), fuzz. Review cards are due at a 4am day start. |
 | `js/session.js` | `todayPlan` (due cards, new cards within the daily limit, English→French unlock + sibling burying), `buildQueue`, `Session` (learning cards come back in-session with a 20-minute learn-ahead). |
-| `js/answer.js` | Typed-answer checking: normalisation, accent-blind compare, article/gender detection, typo tolerance, `/`-separated alternatives. |
+| `js/answer.js` | Typed-answer checking: normalization, accent-blind compare, article/gender detection, typo tolerance, `/`-separated alternatives. |
 | `js/progress.js` | XP/levels, streak + freezes, daily goal, trophies, shop buy/equip, weekly XP. |
 | `js/store.js` | Data model, load/save/migrate, word edits, share-link encode/decode/diff/apply, backup merge. |
 | `js/words.js` | The 30 seed words, plus the bulk-paste parser. |
@@ -30,9 +30,11 @@ Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
 | `js/art.js` | Inline SVG: mascot (moods: happy/wow/sad/wink/cool), avatar accessories, flag, skyline. |
 | `js/audio.js` | speechSynthesis French voice picking, and WebAudio sound effects. |
 | `js/ui.js`, `js/fx.js` | Modals, PIN pad, helpers; confetti, toasts, floaters. |
-| `js/main.js` | Hash router. `#import=<code>` opens the word-list import and `#join=<family code>` joins family sync. |
+| `js/main.js` | Hash router. `#import=<code>` opens the word-list import and `#join=<family code>` joins family sync. `#hub=<code>&kid=<kidId>` (from the family hub) stores the hub code and opens that kid's home; it is handled first. |
 | `js/sync.js` | Pure three-way merge (base / local / remote) for family sync, plus `syncDoc`/`applyDoc` and family codes. |
 | `js/cloud.js` | Firestore REST: pull → `merge3` → conditional PATCH (`currentDocument.updateTime`), retried on conflict. Folds in changes made while the sync was in flight. |
+| `js/hub-client.js` | Verbatim copy of `nssharpe/family-hub` `js/hub-client.js` (keep identical): hub handoff parsing, hub doc, ticket outbox. |
+| `js/hubtickets.js` | Family-hub tickets: `cardsToTickets` (1 ticket per N qualifying cards, remainder in `prog.hubUnits`), kid mapping (`p-zyler`/`p-kadyn` to `zyler`/`kadyn`), `reportHub`. Hub code in `mamou-fr:hub`, cached rates in `mamou-fr:hub-settings`, outbox in `mamou-fr:hub-outbox`. Qualifying card: quiz mode, correct first try, not the check right after a new-word intro. |
 | `js/screens/*` | One module per screen, exporting `render({pid, arg, params})`. It may return a cleanup function. |
 | `js/games/*` | Games started from `screens/games.js` via `start(el, ctx)`. |
 
@@ -54,9 +56,9 @@ Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
 
 ## Family sync (Firebase)
 
-- **Project:** `mamou-french` on `nssharpe@gmail.com`, Spark (free) plan, Firestore `(default)` in `nam5`. There's no SDK and no sign-in; the app calls the REST API directly.
+- **Project:** `mamou-french` on Nate's personal Google account (pass `--account` with it), Spark (free) plan, Firestore `(default)` in `nam5`. There's no SDK and no sign-in; the app calls the REST API directly.
 - **Storage:** one document per family, `families/{familyCode}`, with `data` (the JSON from `syncDoc`), `v` and `updated`. The family code is the secret. `firestore.rules` allows `get`/`create`/`update` on ids of 20+ characters, and never `list` or `delete`.
-- **Deploying rules:** the firebase CLI here is logged into UCG accounts, so deploy with gcloud. Get a token with `gcloud auth print-access-token --account nssharpe@gmail.com`, POST the ruleset to `firebaserules.googleapis.com/v1/projects/mamou-french/rulesets`, then PATCH `releases/cloud.firestore`.
+- **Deploying rules:** the firebase CLI here is logged into UCG accounts, so deploy with gcloud. Get a token with `gcloud auth print-access-token --account <Nate's personal Google account>`, POST the ruleset to `firebaserules.googleapis.com/v1/projects/mamou-french/rulesets`, then PATCH `releases/cloud.firestore`.
 - **Merge rules (`js/sync.js`):**
   - Counters (XP, croissants, freezes, stats, per-day numbers) use remote + (local − base). This is why spending can't be undone and XP from two devices adds up.
   - Cards: the latest `last` wins.

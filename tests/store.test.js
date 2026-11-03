@@ -29,6 +29,20 @@ test('save and load round-trip; garbage falls back to defaults', () => {
   assert.equal(loadDB(s).words.length, 30);
 });
 
+test('migrate refreshes untouched seed words from the current seed list, but not edited or custom ones', () => {
+  const stale = { id: 'w-mere', fr: 'la mère', en: 'mother / mom / mum', emoji: '👩', g: 'f', cat: 'Famille', note: 'old note', u: 0 };
+  const edited = { id: 'w-oui', fr: 'oui', en: 'my own gloss', emoji: '👍', cat: 'Salutations', u: 123 };
+  const custom = { id: 'w-custom', fr: 'chat', en: 'cat', emoji: '🐱', cat: 'Animaux', u: 0 };
+  const db = migrate({ words: [stale, edited, custom] });
+  const mere = db.words.find(w => w.id === 'w-mere');
+  assert.equal(mere.en, 'mother / mom');
+  assert.equal(mere.note, 'Kids usually say "maman".');
+  assert.equal(mere.u, 0);
+  assert.equal(db.words.find(w => w.id === 'w-oui').en, 'my own gloss');
+  assert.equal(db.words.find(w => w.id === 'w-custom').en, 'cat');
+  assert.equal(stale.en, 'mother / mom / mum', 'the input object is not mutated');
+});
+
 test('migrate fills in fields missing from older saves', () => {
   const db = migrate({ words: [], profiles: [{ id: 'p1', name: 'A' }], progress: { p1: { xp: 5, stats: { reviews: 2 } } } });
   assert.equal(db.progress.p1.xp, 5);

@@ -40,7 +40,7 @@ test('alternatives separated by slashes', () => {
   assert.ok(checkEnglish('hi', 'hello / good morning / hi'));
   assert.ok(checkEnglish('Good Morning', 'hello / good morning / hi'));
   assert.ok(checkEnglish('the cat', 'cat'));
-  assert.ok(checkEnglish('mom', 'mother / mom / mum'));
+  assert.ok(checkEnglish('mom', 'mother / mom'));
   assert.ok(checkEnglish('mothr', 'mother'));
   assert.ok(!checkEnglish('dog', 'cat'));
   assert.ok(checkEnglish('2', 'two / 2'));

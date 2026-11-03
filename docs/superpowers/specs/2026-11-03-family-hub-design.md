@@ -72,11 +72,11 @@ Anywhere plus Nate and Julia). They used TypingClub two years ago and liked it.
 | App | What earns tickets | Default rate |
 |---|---|---|
 | AMC 8 Quest | Correct answers, counted with the extension's existing rules (`countedAnswers`): voids and resets respected, practice-test problems credited once per year and problem | Problem *n*: `round(1 + 0.2n)` tickets (#1 = 1, #10 = 3, #25 = 6). AMC 10 problems × 1.5. Wrong answers earn 0. |
-| French (Les Cartes de Mamou) | First-try correct answers in **Quiz mode** only (typed and multiple-choice), excluding the check right after a new word's introduction (the answer was just on screen). **Flip cards (self-graded) earn 0 tickets**, because they're the honour system and the goal is verified work only (my call). Recovered misses earn 0, matching the app's anti-guessing XP rule. Games don't earn tickets. | 1 ticket per 4 qualifying cards |
+| French (Les Cartes de Mamou) | First-try correct answers in **Quiz mode** only (typed and multiple-choice), excluding the check right after a new word's introduction (the answer was just on screen). **Flip cards (self-graded) earn 0 tickets**, because they're the honor system and the goal is verified work only (my call). Recovered misses earn 0, matching the app's anti-guessing XP rule. Games don't earn tickets. | 1 ticket per 4 qualifying cards |
 | Typing | Correct characters in a passed lesson (at least 1 star) | 1 ticket per 100 correct characters. Replaying a lesson already at 3 stars pays half. |
 | Spelling | First-try correct words. A miss, even once fixed, earns 0. | 1 ticket per 3 first-try correct words |
 
-- **Daily use (carried over from today's extension behaviour):** tickets earned
+- **Daily use (carried over from today's extension behavior):** tickets earned
   today fund today's unlocks. Unspent tickets and leftover minutes don't carry
   over to tomorrow.
 - **Weekly use:** the rolling 7-day ticket totals drive the balance rules.
@@ -106,7 +106,7 @@ pauses at 0, exactly as the extension does today.
 
 - Per kid, per app: a **min share** and a **max share** of that kid's tickets
   over the trailing 7 days. Both are editable in the hub's grown-ups' corner.
-  0–0 switches the app off for that kid: it can still be practised, but it never
+  0–0 switches the app off for that kid: it can still be practiced, but it never
   pays.
 - **Over max:** while an app is at its max share, further work there still
   works in the app but **awards no counting tickets** until the other apps'
@@ -133,7 +133,7 @@ pauses at 0, exactly as the extension does today.
   counts if, at that moment, the app's counted tickets in the trailing 7 days
   stay within `max% × max(counted total, baseline)`. The builder picks the
   exact formula, as long as it's deterministic, tested, and matches the
-  behaviour above.
+  behavior above.
 
 - **Settings changes (my call):** edits to ranges, rates, the baseline or the
   ladder take effect at the **next local midnight**. The hub stores them with an
@@ -188,12 +188,12 @@ pauses at 0, exactly as the extension does today.
 
 ## Data and sync (my calls)
 
-- **Firebase project:** a new project `sharpe-family` on `nssharpe@gmail.com`,
+- **Firebase project:** a new project `sharpe-family` on Nate's personal Google account (pass `--account` with it),
   Spark (free) plan, Firestore. It follows the pattern already proven on
   `mamou-french`: REST API with no SDK and no sign-in, a long random family code
   as the secret, and rules that only allow access to paths under a code you
   already know. Create the project and deploy rules with gcloud as
-  `nssharpe@gmail.com` (the firebase CLI here is logged into UCG accounts). See
+  Nate's personal Google account (the firebase CLI here is logged into UCG accounts). See
   `mamou-french/CLAUDE.md` → "Family sync (Firebase)" for the exact steps.
 - **Hub document:** `hubs/{familyCode}` holds the settings: kids, ranges,
   rates, baseline and ladder.
@@ -235,7 +235,7 @@ pauses at 0, exactly as the extension does today.
   Force-installed extensions get it without a prompt.
 - **Release:** a new unlisted Chrome Web Store version, reviewed by Google
   (usually a few days). Follow `amc8-quest/extension/PUBLISHING.md`. Until it
-  ships, the kids' laptops keep the current AMC-only behaviour.
+  ships, the kids' laptops keep the current AMC-only behavior.
 
 ## Typing app
 
@@ -289,7 +289,7 @@ pauses at 0, exactly as the extension does today.
 - Light theme only, WCAG AA everywhere. Verify text and background pairs,
   including hover and disabled states.
 - Kid-facing controls are English-first (Nate doesn't speak French). The French
-  app keeps French as flavour.
+  app keeps French as flavor.
 - Pure logic (ticket rates, balance caps, ladder spending, merges) is unit-
   tested with `node --test`, like Les Cartes de Mamou.
 - No personal info in requests. Family codes are the only secret, and they

@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - No build step. Relative URLs only. localStorage key `turbo-keys:v1`. Service-worker cache prefix `turbo-keys-` (deletes only its own caches).
-- Light theme only. WCAG AA for every text/background pair, including hover, disabled, the key highlight and finger colours. Compute the ratios before finishing any UI task.
+- Light theme only. WCAG AA for every text/background pair, including hover, disabled, the key highlight and finger colors. Compute the ratios before finishing any UI task.
 - **Stop on error (spec):** a wrong key doesn't advance the cursor. The score is **correct characters per minute, shown as WPM** (`(text.length / 5) / minutes`). Accuracy (`correct presses / all presses`) is shown but isn't part of the score.
 - Lessons last 1–3 minutes. 1–3 stars against the stage's target WPM. 1 star is needed to move on.
 - **Tickets (shared contract):**

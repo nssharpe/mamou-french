@@ -34,7 +34,7 @@
   - Ladder: `[[15,30],[20,25],[25,20],[30,15],[35,10],[40,5]]` as `[tickets, minutes]`, with the last row repeating.
   - Baseline week: 150. Rolling window: 7 × 24 h.
 - Settings edits are stored as `pending: { effectiveFrom: 'YYYY-MM-DD', settings }` and apply from the next local midnight. Parent +time / end-now stays instant.
-- Tickets earned today fund today's unlocks, and nothing carries to tomorrow. The minutes bank drains only while a show plays (unchanged extension behaviour).
+- Tickets earned today fund today's unlocks, and nothing carries to tomorrow. The minutes bank drains only while a show plays (unchanged extension behavior).
 
 ## Review Focus
 
@@ -57,7 +57,7 @@
 - Produces: REST base `https://firestore.googleapis.com/v1/projects/sharpe-family/databases/(default)/documents/`, the rules below.
 
 - [ ] **Step 1: Create the repo folder and project.** `mkdir C:\dev\family-hub && git init -b main`. Then:
-  - `gcloud projects create sharpe-family --account nssharpe@gmail.com`
+  - `gcloud projects create sharpe-family --account <Nate's personal Google account>`
   - enable `firebase.googleapis.com firestore.googleapis.com firebaserules.googleapis.com`
   - `POST firebase.googleapis.com/v1beta1/projects/sharpe-family:addFirebase` (retry after a minute if you get 403 USER_PROJECT_DENIED)
   - `gcloud firestore databases create --location=nam5`
@@ -192,7 +192,7 @@
       - `https://nssharpe.github.io/amc8-quest/`
       - `https://nssharpe.github.io/mamou-french/`
       - `https://nssharpe.github.io/turbo-keys/`
-      - `https://nssharpe.github.io/spell-hive/`
+      - `https://nssharpe.github.io/spelling-hive/`
 
       The app most under its min gets "Best pick right now". An app at max reads "Practice only — no TV time until others catch up". An off app reads "Practice only".
     - the last 10 events as "+3 Spelling · 4:12pm", with "(practice only)" when `counted < tickets`

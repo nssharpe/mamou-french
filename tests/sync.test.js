@@ -27,6 +27,23 @@ test('XP and croissants earned on two devices add up', () => {
   assert.equal(m.progress['p-zyler'].croissants, 14);
 });
 
+test('hub ticket remainders add up like counters', () => {
+  const { base } = twoDevices();
+  base.progress['p-zyler'].hubUnits = 2;
+  const a = clone(base), b = clone(base);
+  a.progress['p-zyler'].hubUnits = 3; // device A: +1 card
+  b.progress['p-zyler'].hubUnits = 1; // device B: turned some cards into a ticket (net -1)
+  const m = merge3(base, a, b);
+  assert.equal(m.progress['p-zyler'].hubUnits, 2); // remote 1 + (local 3 - base 2)
+  const again = merge3(m, clone(m), clone(m));
+  assert.equal(again.progress['p-zyler'].hubUnits, 2);
+  // An older remote without the field counts as 0, and the result is never negative.
+  const c = clone(base), d = clone(base);
+  c.progress['p-zyler'].hubUnits = 0;
+  delete d.progress['p-zyler'].hubUnits;
+  assert.equal(merge3(base, c, d).progress['p-zyler'].hubUnits, 0);
+});
+
 test('spending croissants on one device is not undone by the other', () => {
   const { base } = twoDevices();
   base.progress['p-kadyn'].croissants = 100;
@@ -140,7 +157,7 @@ test('syncing is idempotent', () => {
   assert.deepEqual(merge3(m, clone(m), clone(m)), m);
 });
 
-test('family codes are long and recognisable', () => {
+test('family codes are long and recognizable', () => {
   const c = makeFamilyCode();
   assert.ok(isFamilyCode(c), c);
   assert.ok(c.length >= 26);

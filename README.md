@@ -29,7 +29,7 @@ profile on the home screen. There's no login.
   - XP and levels with French titles, from Touriste up to Légende de Paris.
   - A daily goal and a 🔥 streak, with 🧊 streak freezes you can buy.
   - Croissants 🥐 to spend in the **Shop**: berets, a chef's toque, a
-    moustache, a crown, backgrounds and card styles.
+    mustache, a crown, backgrounds and card styles.
   - **Le Tour de France:** every level unlocks a stop on a map of France, with a
     postcard and a fun fact.
   - 27 **trophies**, 4 of them secret.

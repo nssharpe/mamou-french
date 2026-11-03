@@ -3,6 +3,7 @@
 import { app, startSyncLoop } from './app.js';
 import { sfx, primeSpeech } from './audio.js';
 import { handleImportLink, handleJoinLink } from './screens/settings.js';
+import { storeHandoff, flushHub } from './hubtickets.js';
 
 const routes = [
   [/^\/?$/, () => import('./screens/home.js')],
@@ -23,6 +24,14 @@ let cleanup = null;
 let renderSeq = 0;
 
 async function route() {
+  // Handoff from the family hub: '#hub=<code>&kid=<zyler|kadyn>'. Remember the code, then open that
+  // kid's home. replaceState keeps the Back button from returning to the handoff link.
+  const handoff = storeHandoff(app.storage, location.hash);
+  if (handoff) {
+    history.replaceState(null, '', '#' + (handoff.pid && app.profile(handoff.pid) ? `/p/${handoff.pid}` : '/'));
+    flushHub(app.storage);
+    return route();
+  }
   const hash = decodeURIComponent(location.hash.replace(/^#/, ''));
   if (hash.startsWith('join=')) {
     await handleJoinLink(hash.slice(5));
@@ -61,6 +70,7 @@ window.addEventListener('hashchange', route);
 window.addEventListener('pointerdown', () => { sfx.unlock(); primeSpeech(); }, { once: true });
 route();
 startSyncLoop();
+flushHub(app.storage); // send tickets an earlier offline session left waiting
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

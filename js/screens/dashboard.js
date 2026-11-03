@@ -11,6 +11,7 @@ import { pick, plural } from '../util.js';
 import { toast, confetti, croissantRain } from '../fx.js';
 import { sfx, setAudioSettings } from '../audio.js';
 import { reward } from '../app.js';
+import { hubCode, kidForPid } from '../hubtickets.js';
 
 export async function render({ pid }) {
   const p = app.profile(pid), prog = app.prog(pid);
@@ -38,16 +39,18 @@ export async function render({ pid }) {
 
   let say, sayEn, mood = 'happy';
   if (!words.length) { say = 'Il n\'y a pas de mots !'; sayEn = 'There are no words yet — ask a grown-up to add some.'; mood = 'sad'; }
-  else if (total > 0 && d.rev === 0) { say = `${hello}, ${p.name} ! On révise ?`; sayEn = `${helloEn}, ${p.name}! Shall we practise?`; }
+  else if (total > 0 && d.rev === 0) { say = `${hello}, ${p.name} ! On révise ?`; sayEn = `${helloEn}, ${p.name}! Shall we practice?`; }
   else if (total > 0) { say = 'Encore quelques cartes !'; sayEn = 'Just a few more cards!'; }
   else if (goal.met) { say = 'Bravo ! Tout est fini pour aujourd\'hui.'; sayEn = 'All done for today! Come back tomorrow.'; mood = 'cool'; }
   else { say = 'Tout est à jour ! On joue ?'; sayEn = 'All caught up! Play a game to hit your goal.'; mood = 'wink'; }
 
   const later = plan.later.length;
+  const hubKid = hubCode(app.storage) ? kidForPid(pid) : null; // set once the kid arrived from the family hub
   const root = setView(`
     ${topbar(pid, { back: '/' })}
     <div class="greet row" style="margin-top:6px">
       <div class="grow"><h1>${e(hello)}, ${e(p.name)} !</h1><div class="date">${e(frenchDate(now))}</div></div>
+      ${hubKid ? `<a class="btn small" id="hub-link" href="https://nssharpe.github.io/family-hub/#/kid/${hubKid}">← Hub</a>` : ''}
     </div>
     <div class="mascot-row" style="margin-top:8px">${mascotHtml({ mood, id: 'dash-mascot' })}${bubbleHtml(say, sayEn)}</div>
 
@@ -163,7 +166,7 @@ async function onboard(pid) {
         <li><b>Today's cards</b>: a few cards every day. Words you know come back less often; tricky ones come back sooner.</li>
         <li>Earn <b>XP</b> to level up and travel the <b>Tour de France</b>.</li>
         <li>Earn <b>croissants 🥐</b> to buy hats and gear in the <b>Shop</b>.</li>
-        <li>Practise every day to grow your <b>streak 🔥</b>.</li>
+        <li>Practice every day to grow your <b>streak 🔥</b>.</li>
       </ul>
       <div class="field"><span class="lbl">First, pick your animal:</span><div class="animal-grid">${ANIMALS.map(a => `<button type="button" data-a="${a}" class="${a === animal ? 'on' : ''}">${a}</button>`).join('')}</div></div>`,
     actions: [{ label: 'Let\'s go! (Allons-y !)', cls: 'primary big' }],

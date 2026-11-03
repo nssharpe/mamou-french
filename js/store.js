@@ -6,7 +6,7 @@
 //   disabledCats: [cat], profiles: [{id, name, animal, u}], progress: {profileId: Progress},
 //   settings: {sound, voice, rate, pin}
 // }
-// Card ids are `${wordId}:r` (recognise: French → English) and `${wordId}:p`
+// Card ids are `${wordId}:r` (recognize: French → English) and `${wordId}:p`
 // (produce: English → French).
 
 import { SEED_WORDS } from './words.js';
@@ -27,6 +27,7 @@ export function newProgress() {
     ach: {},
     owned: [],
     equip: { hat: null, face: null, bg: null, card: null },
+    hubUnits: 0, // qualifying cards not yet turned into family-hub tickets (the remainder under one ticket)
     stats: {
       reviews: 0, correct: 0, bestCombo: 0, perfect: 0, accentOk: 0, wordsLearned: 0,
       memoryBest: null, speedBest: 0, penduWins: 0, duelWins: 0, games: 0, mascotTaps: 0, shopBuys: 0,
@@ -72,6 +73,18 @@ export function migrate(db) {
   const out = { ...base, ...db };
   out.v = DB_VERSION;
   out.words = Array.isArray(db.words) ? db.words : base.words;
+  // Untouched seed words (u === 0) follow the app's current wording, so corrected text
+  // reaches devices that stored the seed list earlier. Edited words (u > 0) are left alone.
+  // This intentionally runs on every load (permanent behavior, not a one-time migration),
+  // so future seed-text fixes reach existing devices too.
+  const seedById = new Map(SEED_WORDS.map(w => [w.id, w]));
+  out.words = out.words.map(w => {
+    const seed = w && w.u === 0 ? seedById.get(w.id) : null;
+    if (!seed) return w;
+    const fresh = { ...w, fr: seed.fr, en: seed.en, emoji: seed.emoji };
+    if (seed.note === undefined) delete fresh.note; else fresh.note = seed.note;
+    return fresh;
+  });
   out.deleted = db.deleted || {};
   out.deletedProfiles = db.deletedProfiles || {};
   out.sync = db.sync || null;

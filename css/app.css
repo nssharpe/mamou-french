@@ -1,7 +1,7 @@
 /* Les Cartes de Mamou — a Parisian café look: cream paper, ink outlines,
-   tricolour accents and "sticker" buttons with an offset shadow.
+   tricolor accents and "sticker" buttons with an offset shadow.
    Light theme only, on purpose (color-scheme: light) so OS dark mode can't
-   recolour anything into unreadable pairs. Contrast ratios noted beside tokens
+   recolor anything into unreadable pairs. Contrast ratios noted beside tokens
    are against --cream unless stated. */
 
 :root {
