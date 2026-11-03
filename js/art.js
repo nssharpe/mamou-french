@@ -85,7 +85,7 @@ export function avatarHtml(profile, prog, size = '') {
   const get = id => SHOP.find(i => i.id === id);
   const bg = get(eq.bg);
   const hat = get(eq.hat), face = get(eq.face), held = get(eq.held);
-  const faceLow = face && face.svg === 'bowtie' ? ' low' : '';
+  const faceLow = face && face.svg === 'bowtie' ? ' low' : face && face.svg === 'moustache' ? ' mid' : '';
   return `<span class="avatar ${size}" ${bg ? `style="background:${bg.bg}"` : ''} aria-hidden="true">
     <span class="animal">${escapeHtml(profile.animal || '🐱')}</span>
     ${hat ? `<span class="acc hat">${itemArt(hat)}</span>` : ''}

@@ -23,7 +23,8 @@ const EMOJI = ('👋 🙏 👍 👎 ✅ ❌ ❤️ 😀 😢 😡 😴 🤔 🥳
 
 let unlocked = false;
 
-export async function render({ arg }) {
+export async function render({ params }) {
+  const arg = params[1];
   const tab = TABS[arg] ? arg : 'words';
   if (app.db.settings.pin && !unlocked) {
     const pin = await pinModal();
@@ -68,10 +69,12 @@ function wordsTab(el) {
         ${ws.map(w => `<div class="word-row">
           <span class="we">${e(w.emoji || '·')}</span>
           <div class="wt"><div class="wf ${genderClass(w)}">${e(w.fr)} ${genderTag(w)}</div><div class="wen">${e(w.en)}${w.note ? ' · 💡' : ''}</div></div>
-          <button class="btn small icon" data-up="${e(w.id)}" aria-label="Monter">↑</button>
-          <button class="btn small icon" data-down="${e(w.id)}" aria-label="Descendre">↓</button>
-          <button class="btn small icon" data-edit="${e(w.id)}" aria-label="Modifier">✏️</button>
-          <button class="btn small icon" data-del="${e(w.id)}" aria-label="Supprimer">🗑️</button>
+          <div class="wactions">
+            <button class="btn small icon" data-up="${e(w.id)}" aria-label="Monter">↑</button>
+            <button class="btn small icon" data-down="${e(w.id)}" aria-label="Descendre">↓</button>
+            <button class="btn small icon" data-edit="${e(w.id)}" aria-label="Modifier">✏️</button>
+            <button class="btn small icon" data-del="${e(w.id)}" aria-label="Supprimer">🗑️</button>
+          </div>
         </div>`).join('')}
       </div>`;
     }).join('')}

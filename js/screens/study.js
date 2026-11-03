@@ -314,7 +314,7 @@ export function render({ pid }) {
     }
 
     // Feedback panel
-    const [fr, en] = correct && !close ? pick(PRAISE) : pick(COMFORT);
+    const [fr, en] = correct && !close ? pick(PRAISE) : close ? ['Presque !', 'Almost!'] : pick(COMFORT);
     const reasonText = {
       accents: `Watch the accents: <b>${e(expected)}</b>`,
       article: `Don't forget the article: <b>${e(expected)}</b>`,
@@ -331,7 +331,9 @@ export function render({ pid }) {
     fb.innerHTML = `<div class="mascot sm ${correct ? 'bounce' : 'wobble'}">${mascotSvg(mood)}</div>
       <div class="fb-text"><div class="fb-title">${e(fr)} <span class="fb-en">(${e(en)})</span></div><div>${detail}</div></div>
       <button class="btn ${correct ? 'green' : 'primary'}" id="next">Suivant →</button>`;
+    stage.querySelectorAll('.accents, .type-area .row').forEach(x => { x.hidden = true; });
     stage.appendChild(fb);
+    fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     fb.querySelector('#next').addEventListener('click', next);
     speak(w.fr);
     keyHandler = k => { if (k === 'Enter' || k === ' ') next(); };

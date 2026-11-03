@@ -72,11 +72,11 @@ export function start(el, { pid, prog, pool, replay }) {
   function draw() {
     el.querySelector('#scene').innerHTML = scene(misses, state);
     el.querySelector('#left').textContent = state === 'play' ? `${MAX_MISSES - misses} essais (tries) left` : '';
-    el.querySelector('#slots').innerHTML = chars.map(ch => {
-      if (ch === ' ') return '<span class="slot sp"></span>';
+    // One group per word so a word never breaks across lines.
+    el.querySelector('#slots').innerHTML = target.split(' ').map(word => `<span class="wgroup">${[...word].map(ch => {
       const show = !isLetter(ch) || known(ch) || state !== 'play';
       return `<span class="slot ${show && isLetter(ch) ? 'revealed' : ''}">${show ? e(ch) : '&nbsp;'}</span>`;
-    }).join('');
+    }).join('')}</span>`).join('');
   }
 
   function guess(l) {
