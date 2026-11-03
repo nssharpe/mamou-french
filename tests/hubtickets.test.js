@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cardsToTickets, kidForPid, pidForKid, reportHub, perTicketFor, hubCode, storeHandoff } from '../js/hubtickets.js';
+import { qualifiesForTicket, cardsToTickets, kidForPid, pidForKid, reportHub, perTicketFor, hubCode, storeHandoff } from '../js/hubtickets.js';
 import { createOutbox } from '../js/hub-client.js';
 import { newProgress, migrate } from '../js/store.js';
 
@@ -90,4 +90,21 @@ test('reportHub queues one French event for the hub kid id, and does nothing wit
   const kp = newProgress();
   assert.equal(reportHub({ storage: st, outbox: ob, prog: kp, pid: 'p-kadyn', cards: 4, now: 3000, flush: false }), 1);
   assert.equal(ob.pending()[1].id, 'french:kadyn:3000');
+});
+
+test('qualifiesForTicket: quiz, correct, first try, no intro check, no hint', () => {
+  const ok = { mode: 'quiz', correct: true, recovering: false, fresh: false, hints: 0 };
+  assert.equal(qualifiesForTicket(ok), true);
+  assert.equal(qualifiesForTicket({ ...ok, hints: undefined }), true); // non-typed cards have no hints
+  assert.equal(qualifiesForTicket({ ...ok, mode: 'flip' }), false);
+  assert.equal(qualifiesForTicket({ ...ok, correct: false }), false);
+  assert.equal(qualifiesForTicket({ ...ok, recovering: true }), false);
+  assert.equal(qualifiesForTicket({ ...ok, fresh: true }), false);
+  assert.equal(qualifiesForTicket({ ...ok, hints: 1 }), false); // hinted typed answer
+  assert.equal(qualifiesForTicket({ ...ok, hints: 3 }), false);
+});
+
+test('qualifiesForTicket: a close typo (correct, graded Hard) still qualifies', () => {
+  // study.js passes correct=true for 'close' typed answers when no hint was used.
+  assert.equal(qualifiesForTicket({ mode: 'quiz', correct: true, recovering: false, fresh: false, hints: 0 }), true);
 });

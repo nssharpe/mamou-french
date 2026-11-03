@@ -21,6 +21,13 @@ export const pidForKid = kid => (typeof kid === 'string' && Object.hasOwn(PID_BY
 
 const goodRate = n => Number.isInteger(n) && n >= 1;
 
+// Does this answer earn ticket progress? Quiz mode only, answered correctly, not a repeat after a miss,
+// not the check right after a new-word intro, and no hint used on a typed answer. A close typo
+// (graded Hard, correct) still qualifies.
+export function qualifiesForTicket({ mode, correct, recovering, fresh, hints }) {
+  return mode === 'quiz' && !!correct && !recovering && !fresh && !(hints > 0);
+}
+
 // Adds `qualifyingCards` to prog.hubUnits and converts every full `perTicket` into a whole ticket.
 // Returns the tickets earned; the remainder stays in prog.hubUnits.
 export function cardsToTickets(prog, qualifyingCards, perTicket) {

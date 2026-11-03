@@ -19,7 +19,7 @@ import { PRAISE, COMFORT, COMBO_WORDS, SHOP } from '../data.js';
 import { e, setView, genderClass, genderTag, confirmModal, isModalOpen } from '../ui.js';
 import { distractors, enOf } from './common.js';
 import { pick, shuffle } from '../util.js';
-import { reportHub, refreshHubSettings } from '../hubtickets.js';
+import { reportHub, refreshHubSettings, hubCode, qualifiesForTicket } from '../hubtickets.js';
 
 export function render({ pid }) {
   const prog = app.prog(pid);
@@ -47,10 +47,14 @@ export function render({ pid }) {
     S.hubCards = 0;
     if (reportHub({ storage: app.storage, prog, pid, cards }) !== null) app.save();
   };
-  refreshHubSettings(app.storage);
-  const hubTimer = setInterval(reportCards, 3 * 60 * 1000);
+  // Without a hub code nothing below runs, so the app behaves exactly as before.
+  const hubOn = !!hubCode(app.storage);
+  const hubTimer = hubOn ? setInterval(reportCards, 3 * 60 * 1000) : null;
   const onHide = () => { if (document.visibilityState === 'hidden') reportCards(); };
-  document.addEventListener('visibilitychange', onHide);
+  if (hubOn) {
+    refreshHubSettings(app.storage);
+    document.addEventListener('visibilitychange', onHide);
+  }
 
   const root = setView(`
     <div class="study-top">
@@ -297,7 +301,8 @@ export function render({ pid }) {
     const rec = recordAnswer(prog, { cardId: id, before, after, correct, combo: S.combo, now, accentWord });
     if (rec.learnedWord) S.learned.push(w);
     if (correct && !rec.recovering) S.firstTry++;
-    if (prog.prefs.mode === 'quiz' && correct && !rec.recovering && !cur.fresh) S.hubCards++;
+    // Close typos (correct, graded Hard) still qualify; hinted typed answers and flip mode do not.
+    if (qualifiesForTicket({ mode: prog.prefs.mode, correct, recovering: rec.recovering, fresh: cur.fresh, hints: cur.hints })) S.hubCards++;
     session.answered(id, after, now);
     const gained = reward(pid, { xp: rec.xp, studied: true });
     S.xp += gained;
