@@ -99,6 +99,8 @@ a { color: var(--bleu); }
   padding: 18px;
 }
 .panel + .panel { margin-top: 16px; }
+/* …but not inside grids, where it would knock cards out of line. */
+:is(.players, .tiles, .status-grid, .summary-grid, .games, .postcards, .items, .trophies, .word-grid) > .panel { margin-top: 0; }
 .panel h2, .panel h3 { margin: 0 0 10px; }
 h1, h2, h3 { line-height: 1.15; }
 .screen-title { font-family: var(--font-script); font-weight: 400; font-size: 2.3rem; margin: 18px 0 4px; }
