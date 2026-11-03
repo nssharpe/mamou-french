@@ -1,0 +1,10 @@
+{
+  "name": "mamou-french",
+  "private": true,
+  "type": "module",
+  "description": "Les Cartes de Mamou — French flashcards for kids",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "serve": "python -m http.server 8777"
+  }
+}
