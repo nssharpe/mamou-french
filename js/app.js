@@ -10,6 +10,7 @@ import { openModal } from './ui.js';
 import { mascotSvg } from './art.js';
 import { escapeHtml } from './util.js';
 import { syncNow } from './cloud.js';
+import { flushHub } from './hubtickets.js';
 
 export const app = {
   db: null,
@@ -59,9 +60,18 @@ function scheduleSync() {
 
 export function startSyncLoop() {
   if (app.db.sync) setTimeout(() => app.sync(), 300);
-  setInterval(() => { if (app.db.sync && document.visibilityState === 'visible') app.sync(); }, 60000);
-  document.addEventListener('visibilitychange', () => { if (app.db.sync) app.sync(); });
-  window.addEventListener('online', () => { if (app.db.sync) app.sync(); });
+  // Hub tickets ride the same triggers, so a send that failed (or was cut off when the tab closed)
+  // is retried while French stays open. An empty outbox makes no request.
+  setInterval(() => {
+    if (document.visibilityState !== 'visible') return;
+    if (app.db.sync) app.sync();
+    flushHub(app.storage);
+  }, 60000);
+  document.addEventListener('visibilitychange', () => {
+    if (app.db.sync) app.sync();
+    if (document.visibilityState === 'visible') flushHub(app.storage);
+  });
+  window.addEventListener('online', () => { if (app.db.sync) app.sync(); flushHub(app.storage); });
 }
 
 function memoryStorage() {
