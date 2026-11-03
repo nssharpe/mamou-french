@@ -157,7 +157,7 @@ test('syncing is idempotent', () => {
   assert.deepEqual(merge3(m, clone(m), clone(m)), m);
 });
 
-test('family codes are long and recognisable', () => {
+test('family codes are long and recognizable', () => {
   const c = makeFamilyCode();
   assert.ok(isFamilyCode(c), c);
   assert.ok(c.length >= 26);

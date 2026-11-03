@@ -27,11 +27,11 @@ export const TOUR = [
   { city: 'Mont-Saint-Michel', emoji: '🏰', lat: 48.64, lon: -1.51, fact: 'At high tide Mont-Saint-Michel becomes an island. The tide here comes in so fast that people say it races in "like a galloping horse".' },
   { city: 'Saint-Malo', emoji: '🏴‍☠️', lat: 48.65, lon: -2.03, fact: 'Saint-Malo was home to corsairs: sailors allowed by the king to capture enemy ships. Basically pirates, but with permission!' },
   { city: 'Carnac', emoji: '🪨', lat: 47.58, lon: -3.08, fact: 'Carnac has more than 3,000 standing stones lined up in rows. People placed them over 6,000 years ago, and nobody knows exactly why.' },
-  { city: 'Nantes', emoji: '🐘', lat: 47.21, lon: -1.56, fact: 'In Nantes a giant mechanical elephant, 12 metres tall, walks around carrying about 50 passengers. Jules Verne, who wrote sci-fi adventures, was born here.' },
+  { city: 'Nantes', emoji: '🐘', lat: 47.21, lon: -1.56, fact: 'In Nantes a giant mechanical elephant, 12 meters tall, walks around carrying about 50 passengers. Jules Verne, who wrote sci-fi adventures, was born here.' },
   { city: 'Chambord', emoji: '🌀', lat: 47.62, lon: 1.52, fact: 'The Château de Chambord has a double staircase: two people can climb it at the same time and never meet. Leonardo da Vinci may have inspired it.' },
-  { city: 'La Rochelle', emoji: '⚓', lat: 46.16, lon: -1.15, fact: 'Two old towers guard La Rochelle\'s harbour. Long ago, a huge chain was stretched between them at night to lock ships out.' },
+  { city: 'La Rochelle', emoji: '⚓', lat: 46.16, lon: -1.15, fact: 'Two old towers guard La Rochelle\'s harbor. Long ago, a huge chain was stretched between them at night to lock ships out.' },
   { city: 'Bordeaux', emoji: '🪞', lat: 44.84, lon: -0.57, fact: 'Bordeaux has the "Miroir d\'eau", a giant pool with only 2 cm of water. You can walk on it, and it reflects the buildings like a mirror.' },
-  { city: 'Dune du Pilat', emoji: '🏜️', lat: 44.59, lon: -1.21, fact: 'The Dune du Pilat is the tallest sand dune in Europe, over 100 metres high. It creeps inland a few metres every year.' },
+  { city: 'Dune du Pilat', emoji: '🏜️', lat: 44.59, lon: -1.21, fact: 'The Dune du Pilat is the tallest sand dune in Europe, over 100 meters high. It creeps inland a few meters every year.' },
   { city: 'Biarritz', emoji: '🏄', lat: 43.48, lon: -1.56, fact: 'Biarritz is where surfing first arrived in Europe, back in 1957. Locals here also speak Basque, one of the oldest languages in Europe.' },
   { city: 'Toulouse', emoji: '✈️', lat: 43.60, lon: 1.44, fact: 'Toulouse is called "la Ville Rose" (the pink city) because of its pink bricks. Giant Airbus planes are put together here.' },
   { city: 'Carcassonne', emoji: '🛡️', lat: 43.21, lon: 2.36, fact: 'Carcassonne is a real medieval fortress city with 3 km of walls and 52 towers. The famous board game is named after it.' },
@@ -84,7 +84,7 @@ export const SHOP = [
   { id: 'diplome', slot: 'hat', name: 'Chapeau de diplômé', price: 150, emoji: '🎓', min: 6 },
   { id: 'couronne', slot: 'hat', name: 'Couronne royale', price: 300, emoji: '👑', min: 10 },
 
-  { id: 'moustache', slot: 'face', name: 'Moustache', price: 50, svg: 'moustache' },
+  { id: 'moustache', slot: 'face', name: 'Mustache', price: 50, svg: 'moustache' },
   { id: 'lunettes', slot: 'face', name: 'Lunettes de soleil', price: 60, emoji: '🕶️' },
   { id: 'noeud', slot: 'face', name: 'Nœud papillon', price: 45, svg: 'bowtie' },
 

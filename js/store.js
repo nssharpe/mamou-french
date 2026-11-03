@@ -6,7 +6,7 @@
 //   disabledCats: [cat], profiles: [{id, name, animal, u}], progress: {profileId: Progress},
 //   settings: {sound, voice, rate, pin}
 // }
-// Card ids are `${wordId}:r` (recognise: French → English) and `${wordId}:p`
+// Card ids are `${wordId}:r` (recognize: French → English) and `${wordId}:p`
 // (produce: English → French).
 
 import { SEED_WORDS } from './words.js';
@@ -73,6 +73,16 @@ export function migrate(db) {
   const out = { ...base, ...db };
   out.v = DB_VERSION;
   out.words = Array.isArray(db.words) ? db.words : base.words;
+  // Untouched seed words (u === 0) follow the app's current wording, so corrected text
+  // reaches devices that stored the seed list earlier. Edited words (u > 0) are left alone.
+  const seedById = new Map(SEED_WORDS.map(w => [w.id, w]));
+  out.words = out.words.map(w => {
+    const seed = w && w.u === 0 ? seedById.get(w.id) : null;
+    if (!seed) return w;
+    const fresh = { ...w, fr: seed.fr, en: seed.en, emoji: seed.emoji };
+    if (seed.note === undefined) delete fresh.note; else fresh.note = seed.note;
+    return fresh;
+  });
   out.deleted = db.deleted || {};
   out.deletedProfiles = db.deletedProfiles || {};
   out.sync = db.sync || null;

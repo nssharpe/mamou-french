@@ -39,7 +39,7 @@ export async function render({ pid }) {
 
   let say, sayEn, mood = 'happy';
   if (!words.length) { say = 'Il n\'y a pas de mots !'; sayEn = 'There are no words yet — ask a grown-up to add some.'; mood = 'sad'; }
-  else if (total > 0 && d.rev === 0) { say = `${hello}, ${p.name} ! On révise ?`; sayEn = `${helloEn}, ${p.name}! Shall we practise?`; }
+  else if (total > 0 && d.rev === 0) { say = `${hello}, ${p.name} ! On révise ?`; sayEn = `${helloEn}, ${p.name}! Shall we practice?`; }
   else if (total > 0) { say = 'Encore quelques cartes !'; sayEn = 'Just a few more cards!'; }
   else if (goal.met) { say = 'Bravo ! Tout est fini pour aujourd\'hui.'; sayEn = 'All done for today! Come back tomorrow.'; mood = 'cool'; }
   else { say = 'Tout est à jour ! On joue ?'; sayEn = 'All caught up! Play a game to hit your goal.'; mood = 'wink'; }
@@ -166,7 +166,7 @@ async function onboard(pid) {
         <li><b>Today's cards</b>: a few cards every day. Words you know come back less often; tricky ones come back sooner.</li>
         <li>Earn <b>XP</b> to level up and travel the <b>Tour de France</b>.</li>
         <li>Earn <b>croissants 🥐</b> to buy hats and gear in the <b>Shop</b>.</li>
-        <li>Practise every day to grow your <b>streak 🔥</b>.</li>
+        <li>Practice every day to grow your <b>streak 🔥</b>.</li>
       </ul>
       <div class="field"><span class="lbl">First, pick your animal:</span><div class="animal-grid">${ANIMALS.map(a => `<button type="button" data-a="${a}" class="${a === animal ? 'on' : ''}">${a}</button>`).join('')}</div></div>`,
     actions: [{ label: 'Let\'s go! (Allons-y !)', cls: 'primary big' }],

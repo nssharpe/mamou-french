@@ -57,7 +57,7 @@ test('storeHandoff saves a valid code and ignores everything else', () => {
   assert.equal(storeHandoff(st, `#hub=${CODE}`).pid, null);
 });
 
-test('perTicketFor reads the cached hub settings, honours pending changes, defaults to 4', () => {
+test('perTicketFor reads the cached hub settings, honors pending changes, defaults to 4', () => {
   const now = new Date(2026, 10, 10, 12).getTime();
   assert.equal(perTicketFor(memStore(), now), 4);
   const cache = s => memStore({ 'mamou-fr:hub-settings': JSON.stringify(s) });

@@ -21,7 +21,7 @@ Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
 |---|---|
 | `js/srs.js` | Anki SM-2: states new/learning/review/relearning, steps 1m/10m, relearn 10m, graduate 1d, easy 4d, ease 2.5 (min 1.3), fuzz. Review cards are due at a 4am day start. |
 | `js/session.js` | `todayPlan` (due cards, new cards within the daily limit, English→French unlock + sibling burying), `buildQueue`, `Session` (learning cards come back in-session with a 20-minute learn-ahead). |
-| `js/answer.js` | Typed-answer checking: normalisation, accent-blind compare, article/gender detection, typo tolerance, `/`-separated alternatives. |
+| `js/answer.js` | Typed-answer checking: normalization, accent-blind compare, article/gender detection, typo tolerance, `/`-separated alternatives. |
 | `js/progress.js` | XP/levels, streak + freezes, daily goal, trophies, shop buy/equip, weekly XP. |
 | `js/store.js` | Data model, load/save/migrate, word edits, share-link encode/decode/diff/apply, backup merge. |
 | `js/words.js` | The 30 seed words, plus the bulk-paste parser. |
