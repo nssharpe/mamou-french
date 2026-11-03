@@ -57,7 +57,7 @@
 - Produces: REST base `https://firestore.googleapis.com/v1/projects/sharpe-family/databases/(default)/documents/`, the rules below.
 
 - [ ] **Step 1: Create the repo folder and project.** `mkdir C:\dev\family-hub && git init -b main`. Then:
-  - `gcloud projects create sharpe-family --account nssharpe@gmail.com`
+  - `gcloud projects create sharpe-family --account <Nate's personal Google account>`
   - enable `firebase.googleapis.com firestore.googleapis.com firebaserules.googleapis.com`
   - `POST firebase.googleapis.com/v1beta1/projects/sharpe-family:addFirebase` (retry after a minute if you get 403 USER_PROJECT_DENIED)
   - `gcloud firestore databases create --location=nam5`

@@ -27,6 +27,7 @@ export function newProgress() {
     ach: {},
     owned: [],
     equip: { hat: null, face: null, bg: null, card: null },
+    hubUnits: 0, // qualifying cards not yet turned into family-hub tickets (the remainder under one ticket)
     stats: {
       reviews: 0, correct: 0, bestCombo: 0, perfect: 0, accentOk: 0, wordsLearned: 0,
       memoryBest: null, speedBest: 0, penduWins: 0, duelWins: 0, games: 0, mascotTaps: 0, shopBuys: 0,

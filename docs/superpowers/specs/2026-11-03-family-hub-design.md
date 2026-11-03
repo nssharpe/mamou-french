@@ -188,12 +188,12 @@ pauses at 0, exactly as the extension does today.
 
 ## Data and sync (my calls)
 
-- **Firebase project:** a new project `sharpe-family` on `nssharpe@gmail.com`,
+- **Firebase project:** a new project `sharpe-family` on Nate's personal Google account (pass `--account` with it),
   Spark (free) plan, Firestore. It follows the pattern already proven on
   `mamou-french`: REST API with no SDK and no sign-in, a long random family code
   as the secret, and rules that only allow access to paths under a code you
   already know. Create the project and deploy rules with gcloud as
-  `nssharpe@gmail.com` (the firebase CLI here is logged into UCG accounts). See
+  Nate's personal Google account (the firebase CLI here is logged into UCG accounts). See
   `mamou-french/CLAUDE.md` → "Family sync (Firebase)" for the exact steps.
 - **Hub document:** `hubs/{familyCode}` holds the settings: kids, ranges,
   rates, baseline and ladder.

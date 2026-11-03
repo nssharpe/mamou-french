@@ -11,6 +11,7 @@ import { pick, plural } from '../util.js';
 import { toast, confetti, croissantRain } from '../fx.js';
 import { sfx, setAudioSettings } from '../audio.js';
 import { reward } from '../app.js';
+import { hubCode, kidForPid } from '../hubtickets.js';
 
 export async function render({ pid }) {
   const p = app.profile(pid), prog = app.prog(pid);
@@ -44,10 +45,12 @@ export async function render({ pid }) {
   else { say = 'Tout est à jour ! On joue ?'; sayEn = 'All caught up! Play a game to hit your goal.'; mood = 'wink'; }
 
   const later = plan.later.length;
+  const hubKid = hubCode(app.storage) ? kidForPid(pid) : null; // set once the kid arrived from the family hub
   const root = setView(`
     ${topbar(pid, { back: '/' })}
     <div class="greet row" style="margin-top:6px">
       <div class="grow"><h1>${e(hello)}, ${e(p.name)} !</h1><div class="date">${e(frenchDate(now))}</div></div>
+      ${hubKid ? `<a class="btn small" id="hub-link" href="https://nssharpe.github.io/family-hub/#/kid/${hubKid}">← Hub</a>` : ''}
     </div>
     <div class="mascot-row" style="margin-top:8px">${mascotHtml({ mood, id: 'dash-mascot' })}${bubbleHtml(say, sayEn)}</div>
 

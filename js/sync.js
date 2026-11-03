@@ -104,6 +104,8 @@ export function mergeProgress3(base, local, remote) {
 
   out.xp = Math.max(0, count(b.xp, l.xp, r.xp));
   out.croissants = Math.max(0, count(b.croissants, l.croissants, r.croissants));
+  // Family-hub ticket remainder (cards not yet turned into a ticket): a counter like the others.
+  out.hubUnits = Math.max(0, count(b.hubUnits, l.hubUnits, r.hubUnits));
 
   const ls = l.streak || {}, rs = r.streak || {}, bs = b.streak || {};
   const newer = (ls.lastDay || '') > (rs.lastDay || '') ? ls
