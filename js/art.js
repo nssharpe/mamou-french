@@ -60,8 +60,11 @@ export function setMascot(el, mood, anim) {
   }
 }
 
+// French puts a (non-breaking) space before ? ! : ; — keep it from wrapping alone.
+export const frTypo = s => String(s).replace(/ ([?!:;»])/g, ' $1').replace(/« /g, '« ');
+
 export function bubbleHtml(fr, en = '') {
-  return `<div class="bubble">${escapeHtml(fr)}${en ? `<span class="en">${escapeHtml(en)}</span>` : ''}</div>`;
+  return `<div class="bubble">${escapeHtml(frTypo(fr))}${en ? `<span class="en">${escapeHtml(en)}</span>` : ''}</div>`;
 }
 
 // ---------- accessories ----------

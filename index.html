@@ -29,5 +29,13 @@
   <canvas id="fx" aria-hidden="true"></canvas>
   <noscript><p style="text-align:center;padding:2rem">This app needs JavaScript turned on.</p></noscript>
   <script type="module" src="js/main.js"></script>
+  <script>
+    // If the app hasn't started after a while (bad connection, stale files), offer a reload.
+    setTimeout(function () {
+      if (window.__mamouStarted) return;
+      var t = document.querySelector('.tagline');
+      if (t) t.innerHTML = 'Hmm, ça charge lentement… <button class="btn small" onclick="location.reload()">Recharger (reload)</button>';
+    }, 7000);
+  </script>
 </body>
 </html>

@@ -231,8 +231,8 @@ function playersTab(el) {
         <button class="btn small" data-act="rename">✏️ Renommer</button></div>
       <div class="grid2" style="margin-top:12px">
         <div class="field"><label>New words per day</label><select class="input" data-pref="newPerDay">${[0, 2, 3, 4, 5, 6, 8, 10, 15].map(n => `<option ${n === pr.newPerDay ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="hint">5 is a good pace. 0 = only review.</span></div>
-        <div class="field"><label>Daily goal (points)</label><select class="input" data-pref="goal">${[10, 15, 20, 30, 40].map(n => `<option ${n === pr.goal ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="hint">1 point per card, ½ per game answer. Clearing all due cards also counts.</span></div>
-        <div class="field"><label>Card style</label><select class="input" data-pref="mode"><option value="quiz" ${pr.mode === 'quiz' ? 'selected' : ''}>Quiz (auto-checked)</option><option value="flip" ${pr.mode === 'flip' ? 'selected' : ''}>Flip cards (self-graded)</option></select></div>
+        <div class="field"><label>Daily goal (points)</label><select class="input" data-pref="goal">${[10, 15, 20, 30, 40].map(n => `<option ${n === pr.goal ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="hint">1 point per right answer (½ in games). Clearing all due cards also counts.</span></div>
+        <div class="field"><label>Card style</label><select class="input" data-pref="mode"><option value="quiz" ${pr.mode === 'quiz' ? 'selected' : ''}>Quiz (auto-checked)</option><option value="flip" ${pr.mode === 'flip' ? 'selected' : ''}>Flip cards (self-graded)</option></select><span class="hint">Quiz checks answers for them. Flip cards are on the honour system.</span></div>
       </div>
       <div class="row">
         <button class="btn small" data-act="reset">↺ Reset progress</button>

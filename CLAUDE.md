@@ -1,7 +1,7 @@
 # Les Cartes de Mamou — CLAUDE.md
 
 French vocab flashcards for Nate's kids (Zyler and Kadyn, ~12), who learn French
-with Mamou (Julia's mom). Hosted on GitHub Pages: https://nssharpe.github.io/mamou-french/
+with Mamou. Hosted on GitHub Pages: https://nssharpe.github.io/mamou-french/
 Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
 
 ## Ground rules
@@ -47,7 +47,7 @@ Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
 
 ## Testing
 
-`npm test` runs node's built-in test runner over `tests/*.test.js`. For the UI, serve the folder (`python -m http.server 8777`) and click through. The `?r=N` query param busts the browser module cache during development.
+`npm test` runs node's built-in test runner over `tests/*.test.js`. For the UI, serve the folder (`python -m http.server 8777`) and click through. The browser caches ES modules aggressively; serve with `Cache-Control: no-store` (or hard-reload) while developing.
 
 ## Ideas not done yet
 

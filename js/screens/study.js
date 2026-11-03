@@ -209,7 +209,9 @@ export function render({ pid }) {
       const flipper = stage.querySelector('#flipper');
       const flash = stage.querySelectorAll('.flash.face');
       // The flipper needs a height: use the taller face.
-      requestAnimationFrame(() => { flipper.style.minHeight = Math.max(...[...flash].map(f => f.scrollHeight), 300) + 'px'; });
+      const fit = () => { flipper.style.minHeight = Math.max(...[...flash].map(f => f.scrollHeight), 300) + 'px'; };
+      fit();
+      setTimeout(fit, 300); // again once fonts/emoji have settled
       wireSpeak(w.fr);
       if (dir === 'r' && autoSpeak) speak(w.fr);
       const flip = () => {

@@ -44,8 +44,10 @@ export function addXp(prog, amount, now, { game = false } = {}) {
   return { gained, levelUps };
 }
 
+// Wrong answers earn nothing, so guessing never beats knowing (see the
+// "random tapping" test in tests/progress.test.js).
 export function xpForAnswer(correct, combo) {
-  return correct ? 10 + Math.min(10, combo) : 3;
+  return correct ? 10 + Math.min(10, combo) : 0;
 }
 
 /**
@@ -57,8 +59,7 @@ export function recordAnswer(prog, { cardId, before, after, correct, combo, now,
   const s = prog.stats;
   s.reviews++;
   d.rev++;
-  d.pts++;
-  if (correct) { s.correct++; d.ok++; }
+  if (correct) { s.correct++; d.ok++; d.pts++; }
   if (combo > s.bestCombo) s.bestCombo = combo;
   if (accentWord && correct) s.accentOk++;
   if (before.state === 'new') {
@@ -70,7 +71,13 @@ export function recordAnswer(prog, { cardId, before, after, correct, combo, now,
     s.wordsLearned++;
     learnedWord = true;
   } else if (before.grad) after.grad = true;
-  const xp = xpForAnswer(correct, combo) + (learnedWord ? 15 : 0);
+  // A missed card comes back several times the same day; getting it right then
+  // is worth a little, not full XP — otherwise missing on purpose would pay.
+  const k = dayKey(now);
+  const recovering = before.miss === k;
+  if (!correct) after.miss = k;
+  else if (before.miss) after.miss = before.miss;
+  const xp = (recovering && correct ? 2 : xpForAnswer(correct, combo)) + (learnedWord ? 15 : 0);
   return { xp, learnedWord };
 }
 

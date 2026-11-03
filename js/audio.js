@@ -41,7 +41,7 @@ export function speak(text, { rate, onend } = {}) {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(say);
     const v = pickVoice();
-    if (v) u.voice = v;
+    if (v) try { u.voice = v; } catch { /* not a real SpeechSynthesisVoice */ }
     u.lang = v ? v.lang : 'fr-FR';
     u.rate = rate || settings.rate || 0.85;
     u.pitch = 1;
@@ -52,6 +52,13 @@ export function speak(text, { rate, onend } = {}) {
     onend && onend();
     return false;
   }
+}
+
+// iOS only lets speech start from a user gesture; a silent utterance during
+// the first tap unlocks it for later automatic speech.
+export function primeSpeech() {
+  if (!('speechSynthesis' in window)) return;
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch { /* ignore */ }
 }
 
 // Wire a speaker button: plays, and pulses while talking.

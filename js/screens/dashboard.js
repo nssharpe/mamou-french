@@ -164,15 +164,10 @@ async function kidSettings(pid) {
   const ok = await openModal({
     title: 'Mes réglages',
     body: `
-      <div class="field"><span class="lbl">Card style</span>
-        <select class="input" id="ks-mode">
-          <option value="quiz" ${pr.mode === 'quiz' ? 'selected' : ''}>Quiz — pick or type the answer (checked for you)</option>
-          <option value="flip" ${pr.mode === 'flip' ? 'selected' : ''}>Classic flip cards — you grade yourself</option>
-        </select></div>
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="ks-speak" ${pr.autoSpeak ? 'checked' : ''}><span class="track"></span>Say French words out loud automatically</label>
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="ks-sound" ${app.db.settings.sound ? 'checked' : ''}><span class="track"></span>Sound effects</label>
       <div class="field"><span class="lbl">My animal</span><div class="animal-grid">${ANIMALS.map(a => `<button type="button" data-a="${a}" class="${a === animal ? 'on' : ''}">${a}</button>`).join('')}</div></div>
-      <p class="muted" style="font-size:.88rem">Words per day and the daily goal are in the grown-ups' corner.</p>`,
+      <p class="muted" style="font-size:.88rem">Words per day, the daily goal and the card style are in the grown-ups' corner.</p>`,
     actions: [{ label: 'Annuler', cls: 'ghost', value: false }, { label: 'Enregistrer', cls: 'primary', value: true }],
     onOpen(el) {
       el.querySelector('.animal-grid').addEventListener('click', ev => {
@@ -180,7 +175,6 @@ async function kidSettings(pid) {
         animal = b.dataset.a;
         el.querySelectorAll('.animal-grid button').forEach(x => x.classList.toggle('on', x === b));
       });
-      el.querySelector('#ks-mode').addEventListener('change', ev => { pr.mode = ev.target.value; });
       el.querySelector('#ks-speak').addEventListener('change', ev => { pr.autoSpeak = ev.target.checked; });
       el.querySelector('#ks-sound').addEventListener('change', ev => { pr.sound = ev.target.checked; });
     },

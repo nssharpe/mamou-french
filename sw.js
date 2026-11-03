@@ -62,8 +62,11 @@ self.addEventListener('fetch', event => {
   const ours = url.origin === location.origin && url.pathname.startsWith(new URL('./', self.registration.scope).pathname);
   const fonts = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
   if (!ours && !fonts) return;
+  // Always revalidate our own files (cheap 304s) so a fresh deploy never mixes
+  // new modules with stale ones from the HTTP cache.
+  const net = ours && req.mode !== 'navigate' ? fetch(req, { cache: 'no-cache' }) : fetch(req);
   event.respondWith(
-    fetch(req)
+    net
       .then(res => {
         if (res && (res.ok || res.type === 'opaque')) {
           const copy = res.clone();

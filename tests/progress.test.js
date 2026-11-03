@@ -123,3 +123,36 @@ test('content sanity: 25 tour stops, ranks ascend, map projects on-screen', () =
     assert.ok(x >= 0 && x <= 100 && y >= 0 && y <= 100, `${lat},${lon} -> ${x},${y}`);
   }
 });
+
+test('random tapping never out-earns knowing the words', async () => {
+  const { Session, rId } = await import('../js/session.js');
+  const { schedule, newCard, GOOD, AGAIN } = await import('../js/srs.js');
+  const { SEED_WORDS } = await import('../js/words.js');
+  const ids = SEED_WORDS.slice(0, 5).map(w => rId(w.id));
+  let seed = 7;
+  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+  function run(accuracy) {
+    const p = newProgress();
+    const s = new Session(ids);
+    let now = T0, combo = 0, xp = 0;
+    for (let i = 0; i < 500; i++) {
+      const id = s.next(now);
+      if (!id) break;
+      const correct = rand() < accuracy;
+      combo = correct ? combo + 1 : 0;
+      const before = p.cards[id] || newCard();
+      const after = schedule(before, correct ? GOOD : AGAIN, now, undefined, () => 0.5);
+      p.cards[id] = after;
+      xp += recordAnswer(p, { cardId: id, before, after, correct, combo, now }).xp;
+      s.answered(id, after, now);
+      now += 8000;
+    }
+    return { xp, pts: Object.values(p.days)[0].pts };
+  }
+  const perfect = run(1);
+  for (const acc of [0.25, 0.5, 0.75]) {
+    const guess = run(acc);
+    assert.ok(perfect.xp > guess.xp, `perfect ${perfect.xp} should beat ${acc * 100}% accuracy ${guess.xp}`);
+  }
+});

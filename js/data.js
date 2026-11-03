@@ -158,7 +158,7 @@ export const PRAISE = [
 ];
 
 export const COMFORT = [
-  ['Pas grave !', 'No big deal!'], ['Presque !', 'Almost!'], ['Courage !', 'Keep going!'],
+  ['Pas grave !', 'No big deal!'], ['Oups !', 'Oops!'], ['Courage !', 'Keep going!'],
   ['On continue !', 'Let\'s keep going!'], ['Tu vas l\'avoir !', 'You\'ll get it!'], ['Zut alors !', 'Oh, darn!'],
 ];
 

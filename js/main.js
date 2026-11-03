@@ -1,7 +1,7 @@
 // Entry point: load data, handle share links, and route between screens.
 
 import { app } from './app.js';
-import { sfx } from './audio.js';
+import { sfx, primeSpeech } from './audio.js';
 import { handleImportLink } from './screens/settings.js';
 
 const routes = [
@@ -49,9 +49,10 @@ async function route() {
 }
 
 app.init();
+window.__mamouStarted = true;
 window.addEventListener('hashchange', route);
 // Unlock audio on the first touch (iOS needs a user gesture).
-window.addEventListener('pointerdown', () => sfx.unlock(), { once: true });
+window.addEventListener('pointerdown', () => { sfx.unlock(); primeSpeech(); }, { once: true });
 route();
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
