@@ -6,6 +6,7 @@
 import { app, reward, celebrate } from '../app.js';
 import { avatarHtml, mascotSvg } from '../art.js';
 import { gamePool, distractors, enOf } from './common.js';
+import { capGameCroissants } from '../progress.js';
 import { e, setView, genderClass, isModalOpen } from '../ui.js';
 import { shuffle, pick } from '../util.js';
 import { speak, sfx } from '../audio.js';
@@ -134,16 +135,17 @@ function duel(aId, bId, face) {
     const w = players[winner], l = players[1 - winner];
     w.prog.stats.duelWins++;
     sfx.fanfare(); confetti({ count: 240 }); croissantRain();
-    const gw = reward(w.id, { xp: 15 + w.score * 3, croissants: 6, game: true });
-    const gl = reward(l.id, { xp: 5 + l.score * 3, croissants: 2, game: true });
+    const cw = capGameCroissants(w.prog, Date.now(), 6), cl = capGameCroissants(l.prog, Date.now(), 2);
+    const gw = reward(w.id, { xp: 15 + w.score * 3, croissants: cw, game: true });
+    const gl = reward(l.id, { xp: 5 + l.score * 3, croissants: cl, game: true });
     setView(`
       <div class="summary" style="margin-top:20px">
         <div class="mascot lg bounce" style="margin:0 auto">${mascotSvg('cool')}</div>
         <h1 class="screen-title">Victoire de ${e(w.p.name)} !</h1>
         <p class="muted">${e(w.p.name)} wins ${w.score}–${l.score}. Bien joué, tous les deux ! (Well played, both of you!)</p>
         <div class="podium">
-          <div class="spot p2">${avatarHtml(l.p, l.prog, 'lg')}<div><b>${e(l.p.name)}</b></div><div class="block">${l.score}</div><div class="muted">+${gl} XP · +2 🥐</div></div>
-          <div class="spot p1">${avatarHtml(w.p, w.prog, 'xl')}<div><b>👑 ${e(w.p.name)}</b></div><div class="block">${w.score}</div><div class="muted">+${gw} XP · +6 🥐</div></div>
+          <div class="spot p2">${avatarHtml(l.p, l.prog, 'lg')}<div><b>${e(l.p.name)}</b></div><div class="block">${l.score}</div><div class="muted">+${gl} XP · +${cl} 🥐</div></div>
+          <div class="spot p1">${avatarHtml(w.p, w.prog, 'xl')}<div><b>👑 ${e(w.p.name)}</b></div><div class="block">${w.score}</div><div class="muted">+${gw} XP · +${cw} 🥐</div></div>
         </div>
         <div class="row" style="justify-content:center;margin-top:20px">
           <a class="btn big" href="#/">🏠 Accueil</a>

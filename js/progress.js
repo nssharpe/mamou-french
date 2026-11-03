@@ -6,6 +6,15 @@ import { today, dirOf } from './session.js';
 import { dayKey, addDaysToKey, daysBetweenKeys } from './util.js';
 
 export const GAME_XP_DAILY_CAP = 200;
+export const GAME_CROISSANT_DAILY_CAP = 25;
+
+// Croissants from games are capped per day too, so the shop isn't a grind target.
+export function capGameCroissants(prog, now, n) {
+  const d = today(prog, now);
+  const give = Math.max(0, Math.min(n, GAME_CROISSANT_DAILY_CAP - (d.gameCr || 0)));
+  d.gameCr = (d.gameCr || 0) + give;
+  return give;
+}
 
 export function levelInfo(xp) {
   let level = 1, rest = xp;
@@ -59,7 +68,10 @@ export function recordAnswer(prog, { cardId, before, after, correct, combo, now,
   const s = prog.stats;
   s.reviews++;
   d.rev++;
-  if (correct) { s.correct++; d.ok++; d.pts++; }
+  const recovering = before.miss === dayKey(now);
+  // Goal points come from first-try right answers; a kid who struggles still
+  // meets the goal by finishing every due card (see updateGoal).
+  if (correct) { s.correct++; d.ok++; if (!recovering) d.pts++; }
   if (combo > s.bestCombo) s.bestCombo = combo;
   if (accentWord && correct) s.accentOk++;
   if (before.state === 'new') {
@@ -74,11 +86,10 @@ export function recordAnswer(prog, { cardId, before, after, correct, combo, now,
   // A missed card comes back several times the same day; getting it right then
   // is worth a little, not full XP — otherwise missing on purpose would pay.
   const k = dayKey(now);
-  const recovering = before.miss === k;
   if (!correct) after.miss = k;
   else if (before.miss) after.miss = before.miss;
   const xp = (recovering && correct ? 2 : xpForAnswer(correct, combo)) + (learnedWord ? 15 : 0);
-  return { xp, learnedWord };
+  return { xp, learnedWord, recovering };
 }
 
 export function displayStreak(prog, now) {
@@ -119,11 +130,12 @@ export function checkStreak(prog, now) {
  * cleared). Extends the streak the first time it happens each day.
  * Returns { justMet, streak }.
  */
-export function updateGoal(prog, now, { deckCleared = false } = {}) {
+export function updateGoal(prog, now, { deckCleared = false, minRev = 5 } = {}) {
   const d = today(prog, now);
   if (d.goal) return { justMet: false, streak: prog.streak.count };
   const goal = prog.prefs.goal || 20;
-  if (!(d.pts >= goal || (deckCleared && d.rev >= 5))) return { justMet: false, streak: prog.streak.count };
+  // On light days (few cards due) finishing them all is enough.
+  if (!(d.pts >= goal || (deckCleared && d.rev >= Math.max(1, minRev)))) return { justMet: false, streak: prog.streak.count };
   d.goal = true;
   const t = dayKey(now);
   const st = prog.streak;

@@ -6,7 +6,7 @@ import { app, reward, celebrate } from '../app.js';
 import { topbar, gamePool } from './common.js';
 import { e, setView } from '../ui.js';
 import { today } from '../session.js';
-import { updateGoal, GAME_XP_DAILY_CAP } from '../progress.js';
+import { updateGoal, GAME_XP_DAILY_CAP, capGameCroissants } from '../progress.js';
 import { toast, confetti } from '../fx.js';
 import { sfx } from '../audio.js';
 
@@ -77,6 +77,7 @@ export function gameOver(pid, key, { xp = 0, croissants = 0, correct = 0 }) {
     prog.croissants += 10;
     setTimeout(() => { sfx.fanfare(); confetti(); toast('Objectif du jour atteint !', { sub: `Streak ${goal.streak} 🔥 · +10 🥐`, icon: '🎯', gold: true }); }, 600);
   }
+  croissants = capGameCroissants(prog, Date.now(), croissants);
   const gained = reward(pid, { xp, croissants, game: true });
   setTimeout(() => celebrate(pid), 900);
   return `<div class="row" style="justify-content:center;margin:10px 0"><span class="chip blue">+${gained} XP</span><span class="chip gold">+${croissants} 🥐</span></div>`;

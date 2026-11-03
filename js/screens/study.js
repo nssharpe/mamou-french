@@ -29,7 +29,7 @@ export function render({ pid }) {
   if (!queue.length) { app.go(`/p/${pid}`); return; }
 
   const session = new Session(queue);
-  const S = { answered: 0, correct: 0, wrong: 0, xp: 0, combo: 0, bestCombo: 0, learned: [], start: Date.now(), goalMet: false };
+  const S = { answered: 0, correct: 0, firstTry: 0, wrong: 0, xp: 0, combo: 0, bestCombo: 0, learned: [], start: Date.now(), goalMet: false };
   const flipMode = prog.prefs.mode === 'flip';
   const autoSpeak = prog.prefs.autoSpeak !== false;
   const theme = (SHOP.find(i => i.id === prog.equip.card) || {}).cls || '';
@@ -283,6 +283,7 @@ export function render({ pid }) {
     S.bestCombo = Math.max(S.bestCombo, S.combo);
     const rec = recordAnswer(prog, { cardId: id, before, after, correct, combo: S.combo, now, accentWord });
     if (rec.learnedWord) S.learned.push(w);
+    if (correct && !rec.recovering) S.firstTry++;
     session.answered(id, after, now);
     const gained = reward(pid, { xp: rec.xp, studied: true });
     S.xp += gained;
@@ -355,12 +356,13 @@ export function render({ pid }) {
     const left = todayPlan(prog, words, now);
     const cleared = !quit && left.due.length === 0 && left.newR.length === 0 && left.newP.length === 0;
     if (cleared) {
-      const g = updateGoal(prog, now, { deckCleared: true });
+      const g = updateGoal(prog, now, { deckCleared: true, minRev: Math.min(5, session.total) });
       if (g.justMet) { S.goalMet = true; prog.croissants += 10; }
     }
     const perfect = S.answered >= 10 && S.wrong === 0;
     if (perfect) prog.stats.perfect++;
-    let croissants = Math.ceil(S.correct / 2) + (quit ? 0 : 5) + (perfect ? 10 : 0);
+    // Only first-try right answers pay croissants, so missing on purpose never pays.
+    let croissants = Math.ceil(S.firstTry / 2) + (quit ? 0 : 5) + (perfect ? 10 : 0);
     const bonusXp = quit ? 0 : 20;
     S.xp += reward(pid, { xp: bonusXp, croissants, studied: true, quiet: true });
     const acc = Math.round((S.correct / S.answered) * 100);

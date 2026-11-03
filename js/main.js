@@ -49,6 +49,8 @@ async function route() {
 }
 
 app.init();
+// Ask the browser not to evict progress (Safari can clear unused sites' storage).
+try { navigator.storage?.persist?.(); } catch { /* unsupported */ }
 window.__mamouStarted = true;
 window.addEventListener('hashchange', route);
 // Unlock audio on the first touch (iOS needs a user gesture).

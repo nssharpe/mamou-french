@@ -81,6 +81,22 @@ test('clearing every due card meets the goal early', () => {
   assert.equal(updateGoal(p, T0, { deckCleared: true }).justMet, true);
 });
 
+test('a light day (only 2 cards due) still counts once they are done', () => {
+  const p = newProgress();
+  for (let i = 0; i < 2; i++) recordAnswer(p, { cardId: 'a:r', before: newCard(), after: newCard(), correct: true, combo: 0, now: T0 });
+  assert.equal(updateGoal(p, T0, { deckCleared: true }).justMet, false);
+  assert.equal(updateGoal(p, T0, { deckCleared: true, minRev: 2 }).justMet, true);
+});
+
+test('game croissants are capped per day', async () => {
+  const { capGameCroissants, GAME_CROISSANT_DAILY_CAP } = await import('../js/progress.js');
+  const p = newProgress();
+  let total = 0;
+  for (let i = 0; i < 20; i++) total += capGameCroissants(p, T0, 7);
+  assert.equal(total, GAME_CROISSANT_DAILY_CAP);
+  assert.equal(capGameCroissants(p, day(1), 7), 7);
+});
+
 test('achievements award once, with croissants', () => {
   const p = newProgress();
   p.stats.reviews = 1;
@@ -135,7 +151,7 @@ test('random tapping never out-earns knowing the words', async () => {
   function run(accuracy) {
     const p = newProgress();
     const s = new Session(ids);
-    let now = T0, combo = 0, xp = 0;
+    let now = T0, combo = 0, xp = 0, firstTry = 0;
     for (let i = 0; i < 500; i++) {
       const id = s.next(now);
       if (!id) break;
@@ -144,16 +160,20 @@ test('random tapping never out-earns knowing the words', async () => {
       const before = p.cards[id] || newCard();
       const after = schedule(before, correct ? GOOD : AGAIN, now, undefined, () => 0.5);
       p.cards[id] = after;
-      xp += recordAnswer(p, { cardId: id, before, after, correct, combo, now }).xp;
+      const rec = recordAnswer(p, { cardId: id, before, after, correct, combo, now });
+      xp += rec.xp;
+      if (correct && !rec.recovering) firstTry++;
       s.answered(id, after, now);
       now += 8000;
     }
-    return { xp, pts: Object.values(p.days)[0].pts };
+    return { xp, pts: Object.values(p.days)[0].pts, croissants: Math.ceil(firstTry / 2) };
   }
   const perfect = run(1);
   for (const acc of [0.25, 0.5, 0.75]) {
     const guess = run(acc);
     assert.ok(perfect.xp > guess.xp, `perfect ${perfect.xp} should beat ${acc * 100}% accuracy ${guess.xp}`);
+    assert.ok(perfect.croissants > guess.croissants, `croissants: perfect ${perfect.croissants} vs ${guess.croissants}`);
+    assert.ok(perfect.pts >= guess.pts || guess.pts < 10, `goal points: perfect ${perfect.pts} vs ${guess.pts}`);
   }
 });
 
