@@ -84,7 +84,7 @@ export const SHOP = [
   { id: 'diplome', slot: 'hat', name: 'Chapeau de diplômé', price: 150, emoji: '🎓', min: 6 },
   { id: 'couronne', slot: 'hat', name: 'Couronne royale', price: 300, emoji: '👑', min: 10 },
 
-  { id: 'moustache', slot: 'face', name: 'Mustache', price: 50, svg: 'moustache' },
+  { id: 'moustache', slot: 'face', name: 'Moustache', price: 50, svg: 'moustache' },
   { id: 'lunettes', slot: 'face', name: 'Lunettes de soleil', price: 60, emoji: '🕶️' },
   { id: 'noeud', slot: 'face', name: 'Nœud papillon', price: 45, svg: 'bowtie' },
 

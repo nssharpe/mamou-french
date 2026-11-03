@@ -75,6 +75,8 @@ export function migrate(db) {
   out.words = Array.isArray(db.words) ? db.words : base.words;
   // Untouched seed words (u === 0) follow the app's current wording, so corrected text
   // reaches devices that stored the seed list earlier. Edited words (u > 0) are left alone.
+  // This intentionally runs on every load (permanent behavior, not a one-time migration),
+  // so future seed-text fixes reach existing devices too.
   const seedById = new Map(SEED_WORDS.map(w => [w.id, w]));
   out.words = out.words.map(w => {
     const seed = w && w.u === 0 ? seedById.get(w.id) : null;
