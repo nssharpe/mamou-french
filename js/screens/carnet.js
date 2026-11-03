@@ -16,11 +16,11 @@ function wordStars(prog, w) {
 }
 
 function when(card) {
-  if (!card || card.state === 'new') return 'pas encore vu (not seen yet)';
+  if (!card || card.state === 'new') return 'not seen yet';
   const d = Math.ceil((card.due - Date.now()) / 864e5);
-  if (card.due <= Date.now()) return 'à revoir maintenant (due now)';
-  if (card.state !== 'review') return 'bientôt (later today)';
-  return d <= 1 ? 'demain (tomorrow)' : `dans ${d} jours (in ${d} days)`;
+  if (card.due <= Date.now()) return 'due now';
+  if (card.state !== 'review') return 'later today';
+  return d <= 1 ? 'tomorrow' : `in ${d} days`;
 }
 
 export function render({ pid }) {
@@ -32,9 +32,9 @@ export function render({ pid }) {
 
   const root = setView(`
     ${topbar(pid)}
-    <h1 class="screen-title">Mon Carnet</h1>
+    <h1 class="screen-title">Mon Carnet <span class="title-en">My words</span></h1>
     <p class="screen-sub">${known} of ${words.length} words met · ${mastered} mastered ⭐⭐⭐⭐⭐</p>
-    <div class="legend"><span><b class="g-m">bleu</b> = masculin (le, un)</span><span><b class="g-f">rouge</b> = féminin (la, une)</span><span>⭐ = how well you know it</span></div>
+    <div class="legend"><span><b class="g-m">blue</b> = masculine (le, un)</span><span><b class="g-f">red</b> = feminine (la, une)</span><span>⭐ = how well you know it</span></div>
     ${cats.map(cat => `
       <div class="cat-head">${CATEGORY_EMOJI[cat] || '📁'} ${e(cat)}</div>
       <div class="word-grid">
@@ -55,7 +55,7 @@ export function render({ pid }) {
     const b = ev.target.closest('[data-w]'); if (!b) return;
     const w = words.find(x => x.id === b.dataset.w);
     const r = prog.cards[rId(w.id)], p = prog.cards[pId(w.id)];
-    if (!r || r.state === 'new') { openModal({ title: 'Mystère !', body: '<p>You haven\'t met this word yet. Keep doing your daily cards to unlock it!</p>' }); return; }
+    if (!r || r.state === 'new') { openModal({ title: 'Not learned yet', body: '<p>You haven\'t met this word yet. Keep doing your daily cards to unlock it!</p>' }); return; }
     speak(w.fr);
     openModal({
       body: `<div class="center">
@@ -70,7 +70,7 @@ export function render({ pid }) {
         <tr><td>${flagSvg(12)} → English</td><td>${'⭐'.repeat(mastery(r)) || '–'}</td><td>${when(r)}</td></tr>
         <tr><td>English → ${flagSvg(12)}</td><td>${'⭐'.repeat(mastery(p)) || '–'}</td><td>${p && p.state !== 'new' ? when(p) : 'unlocks after you learn the word'}</td></tr>
       </table>`,
-      actions: [{ label: 'Fermer', cls: 'primary' }],
+      actions: [{ label: 'Close', cls: 'primary' }],
       onOpen(el) { el.querySelector('#cw-say')?.addEventListener('click', () => speak(w.fr)); },
     });
   });

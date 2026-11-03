@@ -16,7 +16,7 @@ export function render({ pid }) {
   const order = [top[1], top[0], top[2]].filter(Boolean);
   setView(`
     ${topbar(pid)}
-    <h1 class="screen-title">Le Classement</h1>
+    <h1 class="screen-title">Le Classement <span class="title-en">Leaderboard</span></h1>
     <p class="screen-sub">XP earned this week (Monday to Sunday). Everyone starts fresh on Monday!</p>
     <div class="podium">
       ${order.map(r => {
@@ -26,7 +26,7 @@ export function render({ pid }) {
     </div>
     <div class="panel" style="margin-top:0;border-radius:0 0 var(--radius) var(--radius)">
       <table class="lb-table">
-        <tr><th>#</th><th>Joueur</th><th class="num">Semaine</th><th class="num">Niveau</th><th class="num">🔥</th><th class="num">Mots</th></tr>
+        <tr><th>#</th><th>Player</th><th class="num">Week</th><th class="num">Level</th><th class="num">🔥</th><th class="num">Words</th></tr>
         ${rows.map((r, i) => `<tr><td>${i + 1}</td><td>${e(r.p.name)}</td><td class="num">${r.week}</td><td class="num">${r.level}</td><td class="num">${r.streak}</td><td class="num">${r.words}</td></tr>`).join('')}
       </table>
     </div>`);

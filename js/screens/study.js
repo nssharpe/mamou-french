@@ -41,7 +41,7 @@ export function render({ pid }) {
 
   const root = setView(`
     <div class="study-top">
-      <button class="btn small" id="quit" aria-label="Quitter">✕</button>
+      <button class="btn small" id="quit" aria-label="Quit">✕</button>
       <div class="progress" aria-label="progress"><div id="pfill" style="width:0%"></div></div>
       <div class="combo" id="combo"></div>
     </div>
@@ -49,7 +49,7 @@ export function render({ pid }) {
   const stage = root.querySelector('#stage');
 
   root.querySelector('#quit').addEventListener('click', async () => {
-    if (S.answered && !(await confirmModal('Quitter ?', 'Your answers so far are saved. Leave the session?', { yes: 'Quitter', no: 'Continuer' }))) return;
+    if (S.answered && !(await confirmModal('Quit?', 'Your answers so far are saved. Leave the session?', { yes: 'Quit', no: 'Keep going' }))) return;
     finish(true);
   });
 
@@ -89,7 +89,7 @@ export function render({ pid }) {
 
   const frHtml = w => `<span class="${genderClass(w)}">${e(variants(w.fr)[0])}</span>`;
   const frAll = w => `<span class="${genderClass(w)}">${e(w.fr)}</span>`;
-  const speakBtn = (cls = '') => canSpeak() ? `<button class="speak ${cls}" data-say aria-label="Écouter">🔊</button>` : '';
+  const speakBtn = (cls = '') => canSpeak() ? `<button class="speak ${cls}" data-say aria-label="Listen">🔊</button>` : '';
 
   function wireSpeak(text) {
     stage.querySelectorAll('[data-say]').forEach(b => speakButton(b, text));
@@ -100,14 +100,14 @@ export function render({ pid }) {
     if (kind === 'intro') {
       stage.innerHTML = `
         <div class="flash ${theme}">
-          <span class="chip green badge">✨ Nouveau mot ! (new word)</span>
+          <span class="chip green badge">✨ New word! (nouveau mot)</span>
           <span class="emoji">${e(w.emoji || '❔')}</span>
           <div class="fr">${frAll(w)} ${genderTag(w)}</div>
           ${speakBtn()}
           <div class="en-big">${e(w.en)}</div>
           ${w.note ? `<div class="note">💡 ${e(w.note)}</div>` : ''}
         </div>
-        <button class="btn primary big block" style="margin-top:18px" id="got">J'ai compris ! → <small>(got it)</small></button>`;
+        <button class="btn primary big block" style="margin-top:18px" id="got">Got it! → <small>(J'ai compris)</small></button>`;
       wireSpeak(w.fr);
       if (autoSpeak) speak(w.fr);
       stage.querySelector('#got').addEventListener('click', () => { sfx.tap(); cur.kind = 'mc-r'; cur.fresh = true; show(); });
@@ -121,7 +121,7 @@ export function render({ pid }) {
       const listen = kind === 'listen';
       stage.innerHTML = `
         <div class="flash ${theme}">
-          ${cur.fresh ? '<span class="chip blue badge">Vérifions ! (let\'s check)</span>' : card.state === 'new' ? '' : ''}
+          ${cur.fresh ? '<span class="chip blue badge">Quick check!</span>' : card.state === 'new' ? '' : ''}
           <p class="prompt">${listen ? 'Écoute ! Qu\'est-ce que ça veut dire ? (Listen! What does it mean?)' : 'Que veut dire… ? (What does this mean?)'}</p>
           ${listen ? speakBtn('big') : `<div class="fr">${frAll(w)}</div>${speakBtn()}`}
           <div class="reveal" hidden></div>
@@ -138,7 +138,7 @@ export function render({ pid }) {
       cur.opts = opts;
       stage.innerHTML = `
         <div class="flash ${theme}">
-          ${card.state === 'new' ? '<span class="chip red badge">🎯 Nouveau défi : en français !</span>' : ''}
+          ${card.state === 'new' ? '<span class="chip red badge">🎯 New challenge: say it in French!</span>' : ''}
           <p class="prompt">Comment dit-on… en français ? (How do you say it in French?)</p>
           <span class="emoji">${e(w.emoji || '')}</span>
           <div class="en-big">${e(enOf(w))}</div>
@@ -161,9 +161,9 @@ export function render({ pid }) {
           <input class="type-input" id="ans" lang="fr" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Your answer in French">
           <div class="accents">${ACCENT_KEYS.map(k => `<button type="button" data-k="${k}">${k}</button>`).join('')}<button type="button" data-k="'">'</button></div>
           <div class="row">
-            <button class="btn ghost" id="idk">🤷 Je ne sais pas</button>
-            <button class="btn" id="hint">💡 Indice</button>
-            <button class="btn primary grow" id="check">Vérifier ✓</button>
+            <button class="btn ghost" id="idk">🤷 I don't know</button>
+            <button class="btn" id="hint">💡 Hint</button>
+            <button class="btn primary grow" id="check">Check ✓</button>
           </div>
         </div>`;
       const input = stage.querySelector('#ans');
@@ -191,20 +191,20 @@ export function render({ pid }) {
 
     if (kind === 'flip') {
       const front = dir === 'r'
-        ? `<p class="prompt">Que veut dire… ?</p><div class="fr">${frAll(w)}</div>${speakBtn()}`
-        : `<p class="prompt">En français ?</p><span class="emoji">${e(w.emoji || '')}</span><div class="en-big">${e(w.en)}</div>`;
+        ? `<p class="prompt">What does this mean? (Que veut dire… ?)</p><div class="fr">${frAll(w)}</div>${speakBtn()}`
+        : `<p class="prompt">How do you say it in French?</p><span class="emoji">${e(w.emoji || '')}</span><div class="en-big">${e(w.en)}</div>`;
       const back = `<span class="emoji">${e(w.emoji || '')}</span><div class="fr">${frAll(w)} ${genderTag(w)}</div>${speakBtn()}<div class="en-big">${e(w.en)}</div>${w.note ? `<div class="note">💡 ${e(w.note)}</div>` : ''}`;
       const iv = previewIntervals(card, Date.now());
       stage.innerHTML = `
         <div class="flip-wrap"><div class="flipper" id="flipper">
-          <div class="flash face front ${theme}">${card.state === 'new' ? '<span class="chip green badge">✨ Nouveau !</span>' : ''}${front}<div class="tap-hint">Tape pour retourner (tap to flip) · espace</div></div>
+          <div class="flash face front ${theme}">${card.state === 'new' ? '<span class="chip green badge">✨ New!</span>' : ''}${front}<div class="tap-hint">Tap to flip (or press space)</div></div>
           <div class="flash face back ${theme}">${back}</div>
         </div></div>
         <div class="grades" id="grades" style="visibility:hidden">
-          <button class="btn red" data-g="1">😬 Encore<small>${iv[AGAIN]}</small></button>
-          <button class="btn" data-g="2">😅 Difficile<small>${iv[HARD]}</small></button>
-          <button class="btn primary" data-g="3">🙂 Bien<small>${iv[GOOD]}</small></button>
-          <button class="btn green" data-g="4">😎 Facile<small>${iv[EASY]}</small></button>
+          <button class="btn red" data-g="1">😬 Again<small>${iv[AGAIN]}</small></button>
+          <button class="btn" data-g="2">😅 Hard<small>${iv[HARD]}</small></button>
+          <button class="btn primary" data-g="3">🙂 Good<small>${iv[GOOD]}</small></button>
+          <button class="btn green" data-g="4">😎 Easy<small>${iv[EASY]}</small></button>
         </div>`;
       const flipper = stage.querySelector('#flipper');
       const flash = stage.querySelectorAll('.flash.face');
@@ -296,7 +296,7 @@ export function render({ pid }) {
       app.save();
       setTimeout(() => {
         sfx.fanfare(); confetti({ count: 160 });
-        toast('Objectif du jour atteint !', { sub: `Daily goal done · streak ${goal.streak} 🔥 · +10 🥐`, icon: '🎯', gold: true, ms: 4200 });
+        toast('Daily goal reached!', { sub: `Streak ${goal.streak} 🔥 · +10 🥐`, icon: '🎯', gold: true, ms: 4200 });
       }, 400);
     }
 
@@ -305,7 +305,7 @@ export function render({ pid }) {
     else sfx.wrong();
     const milestone = COMBO_WORDS.slice().reverse().find(([n]) => n === S.combo);
     if (milestone) toast(`${milestone[1]} ×${S.combo}`, { sub: milestone[2], icon: '🔥', ms: 2000 });
-    if (rec.learnedWord) setTimeout(() => toast(`Mot appris : ${w.fr}`, { sub: 'New word learned! +15 XP', icon: w.emoji || '🌱', ms: 2400 }), 250);
+    if (rec.learnedWord) setTimeout(() => toast(`Word learned: ${w.fr}`, { sub: '+15 XP', icon: w.emoji || '🌱', ms: 2400 }), 250);
 
     setProgress();
 
@@ -321,7 +321,7 @@ export function render({ pid }) {
     const reasonText = {
       accents: `Watch the accents: <b>${e(expected)}</b>`,
       article: `Don't forget the article: <b>${e(expected)}</b>`,
-      gender: `Careful with the gender: it's <b>${e(expected)}</b> (${w.g === 'f' ? 'féminin' : 'masculin'})`,
+      gender: `Careful with the gender: it's <b>${e(expected)}</b> (${w.g === 'f' ? 'feminine' : 'masculine'})`,
       typo: `Tiny typo! It's <b>${e(expected)}</b>`,
     }[reason];
     let detail;
@@ -333,7 +333,7 @@ export function render({ pid }) {
     fb.className = `feedback ${correct && !close ? 'good' : close ? 'close' : 'bad'}`;
     fb.innerHTML = `<div class="mascot sm ${correct ? 'bounce' : 'wobble'}">${mascotSvg(mood)}</div>
       <div class="fb-text"><div class="fb-title">${e(fr)} <span class="fb-en">(${e(en)})</span></div><div>${detail}</div></div>
-      <button class="btn ${correct ? 'green' : 'primary'}" id="next">Suivant →</button>`;
+      <button class="btn ${correct ? 'green' : 'primary'}" id="next">Next →</button>`;
     stage.querySelectorAll('.accents, .type-area .row').forEach(x => { x.hidden = true; });
     stage.appendChild(fb);
     fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -374,21 +374,21 @@ export function render({ pid }) {
     const root2 = setView(`
       <div class="summary" style="margin-top:20px">
         <div class="mascot lg bounce" style="margin:0 auto">${mascotSvg(acc >= 80 ? 'cool' : acc >= 50 ? 'happy' : 'wink')}</div>
-        <h1 class="screen-title">${quit ? 'À bientôt !' : perfect ? 'Sans faute !' : 'Session terminée !'}</h1>
-        <p class="muted">${quit ? 'See you soon!' : perfect ? 'Perfect — not a single mistake!' : 'Session complete!'}</p>
+        <h1 class="screen-title">${quit ? 'See you soon!' : perfect ? 'Perfect!' : 'All done!'}</h1>
+        <p class="muted">${quit ? 'À bientôt !' : perfect ? 'Not a single mistake — sans faute !' : 'Session terminée !'}</p>
         <div class="summary-grid">
-          <div class="panel"><div class="big-num">${S.answered}</div><div class="muted">cartes</div></div>
-          <div class="panel"><div class="big-num">${acc}%</div><div class="muted">réussite</div></div>
+          <div class="panel"><div class="big-num">${S.answered}</div><div class="muted">cards</div></div>
+          <div class="panel"><div class="big-num">${acc}%</div><div class="muted">correct</div></div>
           <div class="panel"><div class="big-num">+${S.xp}</div><div class="muted">XP</div></div>
           <div class="panel"><div class="big-num">+${croissants}</div><div class="muted">🥐 croissants</div></div>
-          <div class="panel"><div class="big-num">🔥${S.bestCombo}</div><div class="muted">meilleur combo</div></div>
+          <div class="panel"><div class="big-num">🔥${S.bestCombo}</div><div class="muted">best combo</div></div>
           <div class="panel"><div class="big-num">${mins}</div><div class="muted">minute${mins > 1 ? 's' : ''}</div></div>
         </div>
-        ${S.goalMet ? '<div class="panel" style="background:var(--vert-light)"><b>🎯 Objectif du jour atteint !</b> Your streak is safe today.</div>' : ''}
-        ${S.learned.length ? `<div class="panel" style="margin-top:14px"><b>Nouveaux mots appris :</b><div class="learned-list">${S.learned.map(w => `<span class="chip">${e(w.emoji || '')} ${e(w.fr)}</span>`).join('')}</div></div>` : ''}
+        ${S.goalMet ? '<div class="panel" style="background:var(--vert-light)"><b>🎯 Daily goal reached!</b> Your streak is safe today.</div>' : ''}
+        ${S.learned.length ? `<div class="panel" style="margin-top:14px"><b>New words learned:</b><div class="learned-list">${S.learned.map(w => `<span class="chip">${e(w.emoji || '')} ${e(w.fr)}</span>`).join('')}</div></div>` : ''}
         <div class="row" style="justify-content:center;margin-top:20px">
-          <a class="btn big" href="#/p/${pid}">🏠 Accueil</a>
-          <a class="btn gold big" href="#/p/${pid}/games">🎲 Jouer</a>
+          <a class="btn big" href="#/p/${pid}">🏠 Home</a>
+          <a class="btn gold big" href="#/p/${pid}/games">🎲 Play games</a>
         </div>
       </div>`);
     void root2;

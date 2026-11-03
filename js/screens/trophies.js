@@ -11,7 +11,7 @@ export function render({ pid }) {
   const secretsLeft = ACHIEVEMENTS.filter(a => a.secret && !prog.ach[a.id]).length;
   setView(`
     ${topbar(pid)}
-    <h1 class="screen-title">Les Trophées</h1>
+    <h1 class="screen-title">Les Trophées <span class="title-en">Trophies</span></h1>
     <p class="screen-sub">${got} / ${ACHIEVEMENTS.length} earned${secretsLeft ? ` · ${secretsLeft} secret trophies still hidden… 🤫` : ' · all secrets found!'}</p>
     <div class="trophies">
       ${ACHIEVEMENTS.map(a => {

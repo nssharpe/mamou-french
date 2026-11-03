@@ -71,7 +71,7 @@ export function start(el, { pid, prog, pool, replay }) {
 
   function draw() {
     el.querySelector('#scene').innerHTML = scene(misses, state);
-    el.querySelector('#left').textContent = state === 'play' ? `${MAX_MISSES - misses} essais (tries) left` : '';
+    el.querySelector('#left').textContent = state === 'play' ? `${MAX_MISSES - misses} tries left` : '';
     // One group per word so a word never breaks across lines.
     el.querySelector('#slots').innerHTML = target.split(' ').map(word => `<span class="wgroup">${[...word].map(ch => {
       const show = !isLetter(ch) || known(ch) || state !== 'play';
@@ -110,8 +110,8 @@ export function start(el, { pid, prog, pool, replay }) {
     const rewardHtml = gameOver(pid, 'escargot', { xp, croissants, correct: won ? 2 : 0 });
     app.save();
     el.querySelector('#result').innerHTML = resultPanel(pid, 'escargot', {
-      title: won ? (misses === 0 ? 'Parfait ! L\'escargot est libre !' : 'L\'escargot est sauvé !') : 'Oh non ! Le chef a gagné…',
-      lines: [won ? 'The snail escaped! 🐌💨' : 'The chef caught the snail… this time!', `Le mot : <b>${e(w.fr)}</b> = ${e(enOf(w))}`],
+      title: won ? (misses === 0 ? 'Perfect! The snail is free!' : 'You saved the snail!') : 'Oh no! The chef won…',
+      lines: [won ? 'Merci ! 🐌💨' : 'The chef caught the snail… this time!', `The word: <b>${e(w.fr)}</b> = ${e(enOf(w))}`],
       rewardHtml, mood: won ? 'happy' : 'sad',
     }, mascotSvg);
     el.querySelector('[data-replay]').addEventListener('click', replay);

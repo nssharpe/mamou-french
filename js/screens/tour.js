@@ -13,10 +13,10 @@ function postcardModal(stop, i) {
   speak(stop.city);
   return openModal({
     body: `<div class="postcard postcard-big" style="transform:none;box-shadow:none;border:0;padding:0">
-      <div class="pc-head"><span class="pc-emoji">${stop.emoji}</span><div><div class="muted">Étape ${i + 1} · Niveau ${i + 1}</div><div class="pc-city">${e(stop.city)}</div></div></div>
+      <div class="pc-head"><span class="pc-emoji">${stop.emoji}</span><div><div class="muted">Stop ${i + 1} · Level ${i + 1}</div><div class="pc-city">${e(stop.city)}</div></div></div>
       <p style="font-size:1.08rem">${e(stop.fact)}</p>
       <p class="muted" style="font-size:.9rem">Bons baisers de ${e(stop.city)} ! (Greetings from ${e(stop.city)}!)</p></div>`,
-    actions: [{ label: 'Fermer', cls: 'primary' }],
+    actions: [{ label: 'Close', cls: 'primary' }],
   });
 }
 
@@ -44,17 +44,17 @@ export function render({ pid }) {
         <polyline class="route-done" points="${done}"/>
         ${pts.map(([x, y], i) => `<g class="stop ${i === at ? 'here' : i < at ? 'on' : 'off'}" data-i="${i}">
           <circle cx="${x}" cy="${y}" r="${i === at ? 1.9 : 1.3}"/>
-          <title>${i <= at ? e(TOUR[i].city) : `Niveau ${i + 1}`}</title>
+          <title>${i <= at ? e(TOUR[i].city) : `Level ${i + 1}`}</title>
           ${i === at || i === at + 1 ? `<text x="${x + 2}" y="${y + 0.8}">${e(TOUR[i].city)}</text>` : ''}
         </g>`).join('')}
         <foreignObject x="${hx - 4.5}" y="${hy - 11}" width="10" height="10"><div xmlns="http://www.w3.org/1999/xhtml" style="transform:scale(.08);transform-origin:0 0;width:110px;height:110px;padding:7px">${avatarHtml(p, prog, 'lg')}</div></foreignObject>
       </svg>
     </div>
-    <h2 style="margin-top:22px">Mes cartes postales (${at + 1}/${TOUR.length})</h2>
+    <h2 style="margin-top:22px">My postcards (${at + 1}/${TOUR.length})</h2>
     <div class="postcards">
       ${TOUR.map((s, i) => i <= at ? `
-        <button class="postcard" data-i="${i}"><span class="stamp">${s.emoji}</span><div class="pc-city">${e(s.city)}</div><div class="pc-level">Niveau ${i + 1}</div><p style="margin:6px 0 0;font-size:.9rem">${e(s.fact.slice(0, 70))}…</p></button>` : `
-        <div class="postcard locked"><span class="stamp">🔒</span><div class="pc-city">???</div><div class="pc-level">Niveau ${i + 1}</div></div>`).join('')}
+        <button class="postcard" data-i="${i}"><span class="stamp">${s.emoji}</span><div class="pc-city">${e(s.city)}</div><div class="pc-level">Level ${i + 1}</div><p style="margin:6px 0 0;font-size:.9rem">${e(s.fact.slice(0, 70))}…</p></button>` : `
+        <div class="postcard locked"><span class="stamp">🔒</span><div class="pc-city">???</div><div class="pc-level">Level ${i + 1}</div></div>`).join('')}
     </div>`);
 
   root.addEventListener('click', ev => {

@@ -75,8 +75,8 @@ export function start(el, { pid, prog, pool, replay }) {
     const rewardHtml = gameOver(pid, 'memory', { xp, croissants, correct: pairs.length });
     app.save();
     el.querySelector('#result').innerHTML = resultPanel(pid, 'memory', {
-      title: record ? 'Nouveau record !' : 'Toutes les paires !',
-      lines: [`⏱️ <b>${time}s</b> · 🔁 <b>${moves}</b> coups (moves)`, s.memoryBest !== null ? `Record : ${s.memoryBest}s` : ''],
+      title: record ? 'New record! (Nouveau record !)' : 'All pairs found!',
+      lines: [`⏱️ <b>${time}s</b> · 🔁 <b>${moves}</b> moves`, s.memoryBest !== null ? `Best: ${s.memoryBest}s` : ''],
       rewardHtml, mood: record ? 'cool' : 'happy',
     }, mascotSvg);
     el.querySelector('[data-replay]').addEventListener('click', replay);

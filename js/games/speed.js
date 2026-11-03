@@ -19,7 +19,7 @@ export function start(el, { pid, prog, pool, words, replay }) {
     <div class="panel center" id="intro">
       <p style="font-size:1.1rem">Answer as many as you can in <b>${DURATION} seconds</b>.<br>Wrong answers cost <b>3 seconds</b>. Combos look cool. 🔥</p>
       <p class="muted">Keys 1–4 work too.</p>
-      <button class="btn red big" id="go">Prêts ? Partez ! (Ready? Go!)</button>
+      <button class="btn red big" id="go">Ready? Go! (Partez !)</button>
     </div>
     <div id="play" hidden>
       <div class="row between"><span class="timer-big" id="t">${DURATION}</span><span class="chip blue" style="font-size:1.1rem">⭐ <span id="score">0</span></span><span class="combo" id="combo"></span></div>
@@ -105,8 +105,8 @@ export function start(el, { pid, prog, pool, words, replay }) {
     const rewardHtml = gameOver(pid, 'speed', { xp, croissants, correct: score });
     app.save();
     el.querySelector('#result').innerHTML = resultPanel(pid, 'speed', {
-      title: record ? 'Nouveau record !' : score >= 10 ? 'Rapide comme l\'éclair !' : 'Temps écoulé !',
-      lines: [`Score : <b>${score}</b> · meilleur combo 🔥${best}`, `Record : ${s.speedBest}`],
+      title: record ? 'New record!' : score >= 10 ? 'Fast as lightning!' : 'Time\'s up!',
+      lines: [`Score: <b>${score}</b> · best combo 🔥${best}`, `Best: ${s.speedBest}`],
       rewardHtml, mood: record ? 'cool' : score ? 'happy' : 'wink',
     }, mascotSvg);
     el.querySelector('[data-replay]').addEventListener('click', replay);

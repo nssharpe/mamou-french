@@ -24,7 +24,7 @@ export function render({ pid }) {
     const items = SHOP.filter(i => i.slot === tab);
     root.innerHTML = `
       ${topbar(pid)}
-      <h1 class="screen-title">La Boutique</h1>
+      <h1 class="screen-title">La Boutique <span class="title-en">Shop</span></h1>
       <div class="panel shop-hero">
         ${avatarHtml(p, prog, 'xl')}
         <div>
@@ -41,9 +41,9 @@ export function render({ pid }) {
           const c = canBuy(prog, item);
           let btn;
           if (item.slot === 'freeze') btn = `<button class="btn small gold" data-buy="${item.id}" ${c.ok ? '' : 'disabled'}>${c.why === 'Max 2' ? 'Max 2 🧊' : `🥐 ${item.price}`}</button><div class="muted" style="font-size:.8rem">You have ${prog.streak.freezes}/2</div>`;
-          else if (on) btn = `<button class="btn small green" data-equip="${item.id}">✓ Porté</button>`;
-          else if (owned) btn = `<button class="btn small" data-equip="${item.id}">Porter</button>`;
-          else if (c.why && c.why.startsWith('Level')) btn = `<button class="btn small" disabled>🔒 Niveau ${item.min}</button>`;
+          else if (on) btn = `<button class="btn small green" data-equip="${item.id}">✓ Wearing</button>`;
+          else if (owned) btn = `<button class="btn small" data-equip="${item.id}">Wear</button>`;
+          else if (c.why && c.why.startsWith('Level')) btn = `<button class="btn small" disabled>🔒 Level ${item.min}</button>`;
           else btn = `<button class="btn small gold" data-buy="${item.id}" ${c.ok ? '' : 'disabled'}>🥐 ${item.price}</button>`;
           return `<div class="item ${on ? 'equipped' : ''}">${preview(item)}<div class="iname">${e(item.name)}</div>${item.desc ? `<div class="muted" style="font-size:.8rem">${e(item.desc)}</div>` : ''}${btn}</div>`;
         }).join('')}
@@ -59,10 +59,10 @@ export function render({ pid }) {
     const b = ev.target.closest('[data-buy]');
     if (b) {
       const item = SHOP.find(i => i.id === b.dataset.buy);
-      if (!(await confirmModal(`Acheter ${item.name} ?`, `This costs 🥐 ${item.price}. You have 🥐 ${prog.croissants}.`, { yes: 'Acheter !', no: 'Non merci' }))) return;
+      if (!(await confirmModal(`Buy ${item.name}?`, `This costs 🥐 ${item.price}. You have 🥐 ${prog.croissants}.`, { yes: 'Buy it!', no: 'No thanks' }))) return;
       if (buy(prog, item.id)) {
         sfx.coin(); confetti({ count: 60, y: 0.3 });
-        toast(`${item.name} !`, { sub: 'Nouvel achat (new purchase)', icon: '🛍️' });
+        toast(`${item.name}!`, { sub: 'New purchase', icon: '🛍️' });
         reward(pid, {});
         app.save();
         draw();

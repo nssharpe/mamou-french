@@ -89,8 +89,8 @@ export function reward(pid, { xp = 0, croissants = 0, game = false, quiet = fals
   pendingCelebrations.set(pid, queue);
   app.save();
   if (!quiet) {
-    for (const l of res.levelUps) { sfx.levelUp(); confetti(); toast(`Niveau ${l} !`, { sub: 'Level up!', icon: '⭐', gold: true }); }
-    for (const a of ach) { sfx.coin(); toast(`Trophée : ${a.name}`, { sub: `${a.desc} · +${a.reward} 🥐`, icon: a.emoji, gold: true, ms: 4200 }); }
+    for (const l of res.levelUps) { sfx.levelUp(); confetti(); toast(`Level ${l}!`, { sub: `Niveau ${l} !`, icon: '⭐', gold: true }); }
+    for (const a of ach) { sfx.coin(); toast(`Trophy: ${a.name}`, { sub: `${a.desc} · +${a.reward} 🥐`, icon: a.emoji, gold: true, ms: 4200 }); }
   }
   return res.gained;
 }
@@ -114,14 +114,14 @@ export async function celebrate(pid) {
     await openModal({
       body: `<div class="celebrate">
         <div style="width:120px;margin:0 auto" class="mascot bounce">${mascotSvg('wow')}</div>
-        <h2>Niveau ${level} !</h2>
-        ${newRank ? `<p><b>Nouveau titre :</b> ${rank.emoji} ${escapeHtml(rank.name)}</p>` : ''}
+        <h2>Level ${level}!</h2>
+        ${newRank ? `<p><b>New title:</b> ${rank.emoji} ${escapeHtml(rank.name)}</p>` : ''}
         ${level <= TOUR.length ? `<div class="postcard postcard-big" style="margin-top:12px">
-          <div class="pc-head"><span class="pc-emoji">${stop.emoji}</span><div><div class="muted">Nouvelle carte postale !</div><div class="pc-city">${escapeHtml(stop.city)}</div></div></div>
+          <div class="pc-head"><span class="pc-emoji">${stop.emoji}</span><div><div class="muted">New postcard!</div><div class="pc-city">${escapeHtml(stop.city)}</div></div></div>
           <p>${escapeHtml(stop.fact)}</p></div>` : ''}
         <p class="muted">+20 🥐 bonus</p>
       </div>`,
-      actions: [{ label: 'Super !', cls: 'primary big' }],
+      actions: [{ label: 'Awesome!', cls: 'primary big' }],
     });
     app.prog(pid).seenLevel = Math.max(app.prog(pid).seenLevel, level);
     app.save();

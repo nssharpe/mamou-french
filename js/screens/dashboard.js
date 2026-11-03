@@ -17,8 +17,8 @@ export async function render({ pid }) {
   const now = Date.now();
 
   const st = checkStreak(prog, now);
-  if (st.saved) toast(`Gel de série utilisé ×${st.saved}`, { sub: 'A streak freeze saved your streak!', icon: '🧊', gold: true, ms: 5000 });
-  if (st.lost) toast(`Série perdue (${st.lost} jours)`, { sub: 'No worries — start a new one today!', icon: '💨', ms: 5000 });
+  if (st.saved) toast(`Streak freeze used ×${st.saved}`, { sub: 'Your streak is safe!', icon: '🧊', gold: true, ms: 5000 });
+  if (st.lost) toast(`Streak lost (${st.lost} days)`, { sub: 'No worries — start a new one today!', icon: '💨', ms: 5000 });
   if (st.saved || st.lost) app.save();
 
   const words = app.words();
@@ -53,57 +53,57 @@ export async function render({ pid }) {
 
     <div class="panel study-cta">
       ${total > 0 ? `
-        <h2>Révision du jour</h2>
+        <h2>Today's cards <span class="title-en">Révision du jour</span></h2>
         <div class="counts">
-          ${dueCount ? `<span class="chip blue">🔁 ${plural(dueCount, 'à revoir', 'à revoir')}</span>` : ''}
-          ${newCount ? `<span class="chip green">✨ ${plural(newCount, 'nouveau', 'nouveaux')}</span>` : ''}
+          ${dueCount ? `<span class="chip blue">🔁 ${plural(dueCount, 'to review', 'to review')}</span>` : ''}
+          ${newCount ? `<span class="chip green">✨ ${plural(newCount, 'new', 'new')}</span>` : ''}
         </div>
-        <a class="btn primary big" href="#/p/${pid}/study" id="go-study">C'est parti ! →</a>
-        <div class="muted" style="margin-top:8px;font-size:.9rem">${dueCount} to review · ${newCount} new${later ? ` · ${later} coming back later today` : ''}</div>
+        <a class="btn primary big" href="#/p/${pid}/study" id="go-study">Start! →</a>
+        ${later ? `<div class="muted" style="margin-top:8px;font-size:.9rem">+ ${later} coming back later today</div>` : ''}
       ` : `
-        <h2>${goal.met ? 'Objectif atteint ! 🎉' : 'Tout est à jour ! ✅'}</h2>
+        <h2>${goal.met ? 'Goal reached! 🎉' : 'All caught up! ✅'}</h2>
         <p class="muted" style="margin:6px 0 12px">${later ? `${plural(later, 'card comes', 'cards come')} back a bit later today.` : 'No cards due right now.'} ${plan.moreNew ? 'Want to learn more words?' : ''}</p>
         <div class="row" style="justify-content:center">
-          ${plan.moreNew ? `<button class="btn green big" id="more-new">➕ 5 mots de plus</button>` : ''}
-          <a class="btn gold big" href="#/p/${pid}/games">🎲 Jouer</a>
+          ${plan.moreNew ? `<button class="btn green big" id="more-new">➕ Learn 5 more words</button>` : ''}
+          <a class="btn gold big" href="#/p/${pid}/games">🎲 Play games</a>
         </div>
       `}
     </div>
 
     ${chestReady(prog, now) ? `<button class="panel chest-cta" id="chest">
       <span class="chest" aria-hidden="true">🎁</span>
-      <span><b>Ton coffre du jour !</b><br><span class="muted">Daily goal done — open your surprise!</span></span>
+      <span><b>Open today's surprise chest!</b><br><span class="muted">You reached your daily goal.</span></span>
     </button>` : ''}
 
     <div class="status-grid">
       <div class="panel">
         <div class="ring" style="--p:${goal.pct}"><span>${goal.met ? '✓' : Math.round(goal.pct * 100) + '%'}</span></div>
-        <div><div class="stat-big">${goal.met ? 'Fait !' : `${Math.min(goal.pts, goal.goal)}/${goal.goal}`}</div><div class="stat-label">Objectif du jour<br>(daily goal)</div></div>
+        <div><div class="stat-big">${goal.met ? 'Done!' : `${Math.min(goal.pts, goal.goal)}/${goal.goal}`}</div><div class="stat-label">Daily goal</div></div>
       </div>
       <div class="panel">
         <span class="flame ${streak ? 'live' : 'cold'}">🔥</span>
-        <div><div class="stat-big">${streak} ${streak === 1 ? 'jour' : 'jours'}</div><div class="stat-label">Série${prog.streak.freezes ? ` · 🧊×${prog.streak.freezes}` : ''}<br>(streak · best ${prog.streak.best})</div></div>
+        <div><div class="stat-big">${streak} ${streak === 1 ? 'day' : 'days'}</div><div class="stat-label">Streak${prog.streak.freezes ? ` · 🧊×${prog.streak.freezes}` : ''}<br>Best: ${prog.streak.best}</div></div>
       </div>
     </div>
 
     <div class="panel levelbar">
-      <div class="row between"><b>${rank.emoji} ${e(rank.name)} · Niveau ${lv.level}</b><span class="muted">${lv.into}/${lv.need} XP</span></div>
+      <div class="row between"><b>${rank.emoji} ${e(rank.name)} · Level ${lv.level}</b><span class="muted">${lv.into}/${lv.need} XP</span></div>
       <div class="track" style="margin-top:8px"><div class="fill" style="width:${Math.round(lv.pct * 100)}%"></div></div>
       <div class="muted" style="font-size:.88rem;margin-top:6px">${nr ? `Next title at level ${nr.level}: ${nr.emoji} ${e(nr.name)}` : 'Top title reached — legendary!'} · Next stop: ${e((TOUR[lv.level] || TOUR[TOUR.length - 1]).city)}</div>
     </div>
 
     <div class="tiles">
-      <a class="panel tile t1" href="#/p/${pid}/games"><span class="ico">🎲</span>Jeux<span class="sub">Games</span></a>
-      <a class="panel tile t2" href="#/p/${pid}/carnet"><span class="ico">📒</span>Mon carnet<span class="sub">My words</span></a>
+      <a class="panel tile t1" href="#/p/${pid}/games"><span class="ico">🎲</span>Games<span class="sub">Jeux</span></a>
+      <a class="panel tile t2" href="#/p/${pid}/carnet"><span class="ico">📒</span>My words<span class="sub">Mon carnet</span></a>
       <a class="panel tile t3" href="#/p/${pid}/tour"><span class="ico">🚴</span>Tour de France<span class="sub">${e(stop.city)}</span></a>
-      <a class="panel tile t4" href="#/p/${pid}/shop"><span class="ico">🛍️</span>Boutique<span class="sub">🥐 ${prog.croissants}</span></a>
-      <a class="panel tile t5" href="#/p/${pid}/trophies"><span class="ico">🏆</span>Trophées<span class="sub">${trophies}/${ACHIEVEMENTS.filter(a => !a.secret).length}+</span></a>
-      <a class="panel tile t6" href="#/p/${pid}/classement"><span class="ico">🥇</span>Classement<span class="sub">${weekXp(prog, now)} XP this week</span></a>
+      <a class="panel tile t4" href="#/p/${pid}/shop"><span class="ico">🛍️</span>Shop<span class="sub">🥐 ${prog.croissants}</span></a>
+      <a class="panel tile t5" href="#/p/${pid}/trophies"><span class="ico">🏆</span>Trophies<span class="sub">${trophies}/${ACHIEVEMENTS.filter(a => !a.secret).length}+</span></a>
+      <a class="panel tile t6" href="#/p/${pid}/classement"><span class="ico">🥇</span>Leaderboard<span class="sub">${weekXp(prog, now)} XP this week</span></a>
     </div>
 
-    <div class="panel factbox"><b>Le saviez-vous ?</b> ${e(pick(FUN_FACTS))}</div>
+    <div class="panel factbox"><b>Did you know?</b> ${e(pick(FUN_FACTS))}</div>
     <div class="row" style="justify-content:center;margin-top:16px">
-      <button class="btn small" id="my-settings">🎛️ Mes réglages</button>
+      <button class="btn small" id="my-settings">🎛️ My settings</button>
     </div>
   `);
 
@@ -143,8 +143,8 @@ export async function render({ pid }) {
     await openModal({
       body: `<div class="celebrate"><div class="big-emoji">${prize.croissants >= 75 ? '💰' : prize.freeze ? '🧊' : prize.xp ? '⭐' : '🥐'}</div>
         <h2>${prize.croissants >= 75 ? 'JACKPOT !' : 'Surprise !'}</h2><p style="font-size:1.15rem">${e(prize.label)}</p>
-        <p class="muted">Reviens demain pour un autre coffre ! (Come back tomorrow for another one!)</p></div>`,
-      actions: [{ label: 'Merci !', cls: 'primary big' }],
+        <p class="muted">Come back tomorrow for another one!</p></div>`,
+      actions: [{ label: 'Thanks!', cls: 'primary big' }],
     });
     app.go(`/p/${pid}`);
   });
@@ -157,16 +157,16 @@ async function onboard(pid) {
   const p = app.profile(pid), prog = app.prog(pid);
   let animal = p.animal;
   await openModal({
-    title: `Bienvenue, ${p.name} !`,
+    title: `Welcome, ${p.name}!`,
     body: `<p>I'm <b>Monsieur Croissant</b> 🥐 and I'll help you learn French with Mamou's words.</p>
       <ul style="padding-left:20px;margin:8px 0">
-        <li><b>Révision du jour</b>: a few cards every day. Words you know come back less often; tricky ones come back sooner.</li>
+        <li><b>Today's cards</b>: a few cards every day. Words you know come back less often; tricky ones come back sooner.</li>
         <li>Earn <b>XP</b> to level up and travel the <b>Tour de France</b>.</li>
-        <li>Earn <b>croissants 🥐</b> to buy hats and gear in the <b>Boutique</b>.</li>
+        <li>Earn <b>croissants 🥐</b> to buy hats and gear in the <b>Shop</b>.</li>
         <li>Practise every day to grow your <b>streak 🔥</b>.</li>
       </ul>
       <div class="field"><span class="lbl">First, pick your animal:</span><div class="animal-grid">${ANIMALS.map(a => `<button type="button" data-a="${a}" class="${a === animal ? 'on' : ''}">${a}</button>`).join('')}</div></div>`,
-    actions: [{ label: 'Allons-y ! (Let\'s go!)', cls: 'primary big' }],
+    actions: [{ label: 'Let\'s go! (Allons-y !)', cls: 'primary big' }],
     dismissable: false,
     onOpen(el) {
       el.querySelector('.animal-grid').addEventListener('click', ev => {
@@ -189,13 +189,13 @@ async function kidSettings(pid) {
   const pr = { ...prog.prefs };
   let animal = p.animal;
   const ok = await openModal({
-    title: 'Mes réglages',
+    title: 'My settings',
     body: `
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="ks-speak" ${pr.autoSpeak ? 'checked' : ''}><span class="track"></span>Say French words out loud automatically</label>
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="ks-sound" ${app.db.settings.sound ? 'checked' : ''}><span class="track"></span>Sound effects</label>
       <div class="field"><span class="lbl">My animal</span><div class="animal-grid">${ANIMALS.map(a => `<button type="button" data-a="${a}" class="${a === animal ? 'on' : ''}">${a}</button>`).join('')}</div></div>
       <p class="muted" style="font-size:.88rem">Words per day, the daily goal and the card style are in the grown-ups' corner.</p>`,
-    actions: [{ label: 'Annuler', cls: 'ghost', value: false }, { label: 'Enregistrer', cls: 'primary', value: true }],
+    actions: [{ label: 'Cancel', cls: 'ghost', value: false }, { label: 'Save', cls: 'primary', value: true }],
     onOpen(el) {
       el.querySelector('.animal-grid').addEventListener('click', ev => {
         const b = ev.target.closest('[data-a]'); if (!b) return;

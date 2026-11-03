@@ -13,12 +13,12 @@ export function topbar(pid, { back = `/p/${pid}`, title = '' } = {}) {
   const lvl = levelInfo(prog.xp).level;
   const streak = displayStreak(prog, Date.now());
   return `<div class="topbar">
-    <a class="btn small" href="#${back}" aria-label="Retour">←</a>
+    <a class="btn small" href="#${back}" aria-label="Back">←</a>
     <a class="who" href="#/p/${pid}" style="text-decoration:none;color:inherit">${avatarHtml(p, prog, 'sm')}<span class="name">${e(title || p.name)}</span></a>
     <div class="stats">
-      <span class="chip red" title="Série (streak)" id="tb-streak">🔥 ${streak}</span>
+      <span class="chip red" title="Streak" id="tb-streak">🔥 ${streak}</span>
       <span class="chip gold" title="Croissants" id="tb-croissants">🥐 ${prog.croissants}</span>
-      <span class="chip blue" title="Niveau (level)" id="tb-level">⭐ ${lvl}</span>
+      <span class="chip blue" title="Level" id="tb-level">⭐ ${lvl}</span>
     </div>
   </div>`;
 }

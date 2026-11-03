@@ -22,13 +22,13 @@ export function render({ pid }) {
   const capLeft = Math.max(0, GAME_XP_DAILY_CAP - d.gameXp);
   const s = prog.stats;
   const best = {
-    memory: s.memoryBest !== null ? `Record : ${s.memoryBest}s` : 'Pas encore de record',
-    speed: s.speedBest ? `Record : ${s.speedBest}` : 'Pas encore de record',
-    escargot: `${s.penduWins} escargot${s.penduWins === 1 ? '' : 's'} sauvé${s.penduWins === 1 ? '' : 's'}`,
+    memory: s.memoryBest !== null ? `Best: ${s.memoryBest}s` : 'No record yet',
+    speed: s.speedBest ? `Best: ${s.speedBest}` : 'No record yet',
+    escargot: `${s.penduWins} snail${s.penduWins === 1 ? '' : 's'} saved`,
   };
   const root = setView(`
     ${topbar(pid)}
-    <h1 class="screen-title">Les Jeux</h1>
+    <h1 class="screen-title">Les Jeux <span class="title-en">Games</span></h1>
     <p class="screen-sub">Games with the words you've met. ${capLeft ? `Up to ${capLeft} more game XP today.` : 'Game XP is maxed for today — play for fun and croissants!'}</p>
     <div class="games">
       ${Object.entries(GAMES).map(([k, g]) => `
@@ -39,7 +39,7 @@ export function render({ pid }) {
       ${app.db.profiles.length >= 2 ? `
         <a class="panel game-card" href="#/duel" style="text-decoration:none">
           <span class="gi" style="background:#FFF4C9">⚔️</span>
-          <span><div class="gn">Le Duel</div><div class="gd">Two players, one screen. First to 7 wins!</div><div class="gb">🏅 ${s.duelWins} victoire${s.duelWins === 1 ? '' : 's'}</div></span>
+          <span><div class="gn">Duel</div><div class="gd">Two players, one screen. First to 7 wins!</div><div class="gb">🏅 ${s.duelWins} win${s.duelWins === 1 ? '' : 's'}</div></span>
         </a>` : ''}
     </div>`);
   void root;
@@ -52,7 +52,7 @@ export async function play({ pid, arg }) {
   const prog = app.prog(pid);
   const pool = gamePool(prog, app.words(), 8);
   if (pool.length < 4) {
-    setView(`${topbar(pid, { back: `/p/${pid}/games` })}<div class="panel" style="margin-top:20px"><h2>Pas assez de mots</h2><p>Add at least 4 words in the grown-ups' corner to play.</p></div>`);
+    setView(`${topbar(pid, { back: `/p/${pid}/games` })}<div class="panel" style="margin-top:20px"><h2>Not enough words</h2><p>Add at least 4 words in the grown-ups' corner to play.</p></div>`);
     return;
   }
   const root = setView(`${topbar(pid, { back: `/p/${pid}/games` })}<h1 class="screen-title">${g.icon} ${e(g.name)}</h1><div id="game"></div>`);
@@ -75,7 +75,7 @@ export function gameOver(pid, key, { xp = 0, croissants = 0, correct = 0 }) {
   const goal = updateGoal(prog, Date.now());
   if (goal.justMet) {
     prog.croissants += 10;
-    setTimeout(() => { sfx.fanfare(); confetti(); toast('Objectif du jour atteint !', { sub: `Streak ${goal.streak} 🔥 · +10 🥐`, icon: '🎯', gold: true }); }, 600);
+    setTimeout(() => { sfx.fanfare(); confetti(); toast('Daily goal reached!', { sub: `Streak ${goal.streak} 🔥 · +10 🥐`, icon: '🎯', gold: true }); }, 600);
   }
   croissants = capGameCroissants(prog, Date.now(), croissants);
   const gained = reward(pid, { xp, croissants, game: true });
@@ -90,8 +90,8 @@ export function resultPanel(pid, key, { title, lines = [], rewardHtml, mood = 'h
     ${lines.map(l => `<p style="margin:4px 0">${l}</p>`).join('')}
     ${rewardHtml}
     <div class="row" style="justify-content:center;margin-top:10px">
-      <a class="btn" href="#/p/${pid}/games">← Jeux</a>
-      <button class="btn primary" data-replay>🔁 Rejouer</button>
+      <a class="btn" href="#/p/${pid}/games">← Games</a>
+      <button class="btn primary" data-replay>🔁 Play again</button>
     </div>
   </div>`;
 }

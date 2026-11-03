@@ -110,7 +110,7 @@ export const SHOP = [
   { id: 'gel', slot: 'freeze', name: 'Gel de série', price: 50, emoji: '🧊', desc: 'Protects your streak if you miss a day. Hold up to 2.' },
 ];
 
-export const SLOT_NAMES = { hat: 'Chapeaux', face: 'Visage', held: 'Accessoires', bg: 'Fonds', card: 'Cartes', freeze: 'Bonus' };
+export const SLOT_NAMES = { hat: 'Hats', face: 'Face', held: 'Extras', bg: 'Backgrounds', card: 'Card styles', freeze: 'Power-ups' };
 
 export const ANIMALS = ['🦊', '🐼', '🐱', '🐶', '🐸', '🐰', '🐨', '🦁', '🐯', '🐵', '🐧', '🦉', '🐷', '🐮', '🦄', '🐲', '🐻', '🐹', '🐙', '🦖'];
 

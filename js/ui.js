@@ -53,7 +53,7 @@ export function isModalOpen() {
   return !!document.querySelector('#modal-root .modal-back');
 }
 
-export function confirmModal(title, body, { yes = 'Oui', no = 'Annuler', danger = false } = {}) {
+export function confirmModal(title, body, { yes = 'Yes', no = 'Cancel', danger = false } = {}) {
   return openModal({
     title, body: `<p>${body}</p>`,
     actions: [{ label: no, cls: 'ghost', value: false }, { label: yes, cls: danger ? 'red' : 'primary', value: true }],
@@ -61,12 +61,12 @@ export function confirmModal(title, body, { yes = 'Oui', no = 'Annuler', danger 
 }
 
 // Simple 4-digit PIN pad. Resolves with the digits or null.
-export function pinModal(title = 'Code des grands') {
+export function pinModal(title = 'Grown-ups\' code') {
   return openModal({
     title,
     body: `<p class="center muted">Enter the grown-ups' code</p><div class="pin-dots">${'<i></i>'.repeat(4)}</div>
       <div class="pin-pad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0, '⌫'].map(k => k === '' ? '<span></span>' : `<button data-k="${k}">${k}</button>`).join('')}</div>`,
-    actions: [{ label: 'Annuler', cls: 'ghost', value: null }],
+    actions: [{ label: 'Cancel', cls: 'ghost', value: null }],
     onOpen(el, close) {
       let pin = '';
       const dots = [...el.querySelectorAll('.pin-dots i')];
@@ -107,7 +107,7 @@ export function genderTag(word) {
 }
 
 export function starsHtml(n) {
-  return `<div class="stars" aria-label="${n} sur 5">${[1, 2, 3, 4, 5].map(i => `<span class="${i <= n ? '' : 'off'}">⭐</span>`).join('')}</div>`;
+  return `<div class="stars" aria-label="${n} of 5 stars">${[1, 2, 3, 4, 5].map(i => `<span class="${i <= n ? '' : 'off'}">⭐</span>`).join('')}</div>`;
 }
 
 export function frenchDate(ts = Date.now()) {

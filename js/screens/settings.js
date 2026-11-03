@@ -15,7 +15,7 @@ import { avatarHtml } from '../art.js';
 import { makeFamilyCode, isFamilyCode } from '../sync.js';
 import { onSyncStatus, syncStatus } from '../cloud.js';
 
-const TABS = { words: '📝 Mots', players: '👪 Joueurs', sync: '☁️ Synchro', share: '🔗 Partager', voice: '🔊 Son & voix', backup: '💾 Sauvegarde' };
+const TABS = { words: '📝 Words', players: '👪 Players', sync: '☁️ Sync', share: '🔗 Share', voice: '🔊 Sound & voice', backup: '💾 Backup' };
 
 const EMOJI = ('👋 🙏 👍 👎 ✅ ❌ ❤️ 😀 😢 😡 😴 🤔 🥳 🐱 🐶 🐦 🐟 🐴 🐮 🐷 🐭 🐰 🦊 🐻 🐼 🐸 🐵 🦁 🐯 🐘 🦒 🐢 🐍 🦋 🐝 🐌 🐞 ' +
   '🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🍒 🥕 🥔 🍅 🥖 🥐 🧀 🥚 🥛 ☕ 🍵 🧃 💧 🍰 🍫 🍦 🍕 🍔 🍟 🍝 🥗 🍲 🍽️ ' +
@@ -31,12 +31,12 @@ export async function render({ params }) {
   if (app.db.settings.pin && !unlocked) {
     const pin = await pinModal();
     if (pin === null) { app.go('/'); return; }
-    if ((await hashPin(pin)) !== app.db.settings.pin) { toast('Mauvais code', { sub: 'Wrong code', icon: '🔒' }); app.go('/'); return; }
+    if ((await hashPin(pin)) !== app.db.settings.pin) { toast('Wrong code', { icon: '🔒' }); app.go('/'); return; }
     unlocked = true;
   }
   const root = setView(`
-    <div class="topbar"><a class="btn small" href="#/">←</a><b>Coin des grands</b><span class="muted" style="margin-left:auto">(grown-ups' corner)</span></div>
-    <h1 class="screen-title">Coin des grands</h1>
+    <div class="topbar"><a class="btn small" href="#/">←</a><b>Grown-ups' corner</b><span class="muted" style="margin-left:auto">(coin des grands)</span></div>
+    <h1 class="screen-title">Grown-ups' corner</h1>
     <div class="tabs">${Object.entries(TABS).map(([k, n]) => `<a class="btn small ${k === tab ? 'on' : ''}" href="#/grown-ups/${k}">${n}</a>`).join('')}</div>
     <div id="tab"></div>`);
   const el = root.querySelector('#tab');
@@ -54,11 +54,11 @@ function wordsTab(el) {
     <div class="panel">
       <p style="margin-top:0">These are the words every player studies, in this order. <b>Editing a word keeps the kids' progress.</b> Turn a whole group off to pause it.</p>
       <div class="row">
-        <button class="btn primary" id="add">＋ Ajouter un mot</button>
-        <button class="btn" id="bulk">📋 Coller une liste (paste many)</button>
-        <a class="btn" href="#/grown-ups/share">🔗 Partager</a>
+        <button class="btn primary" id="add">＋ Add a word</button>
+        <button class="btn" id="bulk">📋 Paste a list</button>
+        <a class="btn" href="#/grown-ups/share">🔗 Share list</a>
       </div>
-      <p class="muted" style="margin-bottom:0;font-size:.9rem">${db.words.length} words · ${cats.length} groups · <span class="g-m">bleu = masculin</span> · <span class="g-f">rouge = féminin</span></p>
+      <p class="muted" style="margin-bottom:0;font-size:.9rem">${db.words.length} words · ${cats.length} groups · <span class="g-m">blue = masculine</span> · <span class="g-f">red = feminine</span></p>
     </div>
     ${cats.map(cat => {
       const on = !db.disabledCats.includes(cat);
@@ -66,34 +66,34 @@ function wordsTab(el) {
       return `<div class="panel cat-block ${on ? '' : 'off'}">
         <div class="row between">
           <h3 style="margin:0">${CATEGORY_EMOJI[cat] || '📁'} ${e(cat)} <span class="muted" style="font-weight:400">(${ws.length})</span></h3>
-          <label class="switch"><input type="checkbox" data-cat="${e(cat)}" ${on ? 'checked' : ''}><span class="track"></span>${on ? 'Actif' : 'En pause'}</label>
+          <label class="switch"><input type="checkbox" data-cat="${e(cat)}" ${on ? 'checked' : ''}><span class="track"></span>${on ? 'On' : 'Paused'}</label>
         </div>
         ${ws.map(w => `<div class="word-row">
           <span class="we">${e(w.emoji || '·')}</span>
           <div class="wt"><div class="wf ${genderClass(w)}">${e(w.fr)} ${genderTag(w)}</div><div class="wen">${e(w.en)}${w.note ? ' · 💡' : ''}</div></div>
           <div class="wactions">
-            <button class="btn small icon" data-up="${e(w.id)}" aria-label="Monter">↑</button>
-            <button class="btn small icon" data-down="${e(w.id)}" aria-label="Descendre">↓</button>
-            <button class="btn small icon" data-edit="${e(w.id)}" aria-label="Modifier">✏️</button>
-            <button class="btn small icon" data-del="${e(w.id)}" aria-label="Supprimer">🗑️</button>
+            <button class="btn small icon" data-up="${e(w.id)}" aria-label="Move up">↑</button>
+            <button class="btn small icon" data-down="${e(w.id)}" aria-label="Move down">↓</button>
+            <button class="btn small icon" data-edit="${e(w.id)}" aria-label="Edit">✏️</button>
+            <button class="btn small icon" data-del="${e(w.id)}" aria-label="Delete">🗑️</button>
           </div>
         </div>`).join('')}
       </div>`;
     }).join('')}
     <div class="panel danger-zone">
-      <h3>Recommencer la liste</h3>
+      <h3>Start the list over</h3>
       <p class="muted" style="margin-top:0">Put back the 30 starter words (custom words are removed, and so is progress on them).</p>
-      <button class="btn red" id="reset-words">Remettre les mots de départ</button>
+      <button class="btn red" id="reset-words">Restore the starter words</button>
     </div>`;
 
   el.querySelector('#add').addEventListener('click', () => wordForm());
   el.querySelector('#bulk').addEventListener('click', () => bulkForm());
   el.querySelector('#reset-words').addEventListener('click', async () => {
-    if (!(await confirmModal('Remettre les mots de départ ?', 'This replaces the whole list with the 30 starter words. Progress on starter words is kept.', { yes: 'Remettre', danger: true }))) return;
+    if (!(await confirmModal('Restore the starter words?', 'This replaces the whole list with the 30 starter words. Progress on starter words is kept.', { yes: 'Restore', danger: true }))) return;
     applyWordList(db, SEED_WORDS, 'replace');
     db.disabledCats = [];
     app.save();
-    toast('Liste remise à zéro', { icon: '✅' });
+    toast('Starter words restored', { icon: '✅' });
     rerender();
   });
   el.addEventListener('change', ev => {
@@ -109,7 +109,7 @@ function wordsTab(el) {
     const w = db.words.find(x => x.id === id);
     if (t.dataset.edit) wordForm(w);
     else if (t.dataset.del) {
-      if (!(await confirmModal(`Supprimer « ${w.fr} » ?`, 'The word and everyone\'s progress on it will be removed.', { yes: 'Supprimer', danger: true }))) return;
+      if (!(await confirmModal(`Delete “${w.fr}”?`, 'The word and everyone\'s progress on it will be removed.', { yes: 'Delete', danger: true }))) return;
       deleteWord(db, id); app.save(); rerender();
     } else {
       // Move within its group: swap with the nearest word of the same group.
@@ -133,26 +133,26 @@ async function wordForm(word = null) {
   const cats = categoriesOf(db.words);
   const v = word ? { ...word } : { fr: '', en: '', emoji: '', cat: cats[cats.length - 1] || 'Mes mots', g: '', note: '' };
   const ok = await openModal({
-    title: word ? 'Modifier le mot' : 'Ajouter un mot',
+    title: word ? 'Edit word' : 'Add a word',
     body: `
-      <div class="field"><label for="wf-fr">Français (with le / la / l' / un / une for nouns)</label><input class="input" id="wf-fr" lang="fr" value="${e(v.fr)}" placeholder="le chat"></div>
+      <div class="field"><label for="wf-fr">French (with le / la / l' / un / une for nouns)</label><input class="input" id="wf-fr" lang="fr" value="${e(v.fr)}" placeholder="le chat"></div>
       <div class="field"><label for="wf-en">English</label><input class="input" id="wf-en" value="${e(v.en)}" placeholder="cat"><span class="hint">Several right answers? Separate them with “/”: mother / mom</span></div>
       <div class="grid2">
         <div class="field"><label for="wf-emo">Picture (emoji)</label><input class="input" id="wf-emo" value="${e(v.emoji || '')}" placeholder="🐱" style="font-size:1.4rem"></div>
         <div class="field"><label for="wf-g">Gender</label><select class="input" id="wf-g">
-          <option value="">Auto / none</option><option value="m" ${v.g === 'm' ? 'selected' : ''}>Masculin (blue)</option><option value="f" ${v.g === 'f' ? 'selected' : ''}>Féminin (red)</option>
+          <option value="">Auto / none</option><option value="m" ${v.g === 'm' ? 'selected' : ''}>Masculine (blue)</option><option value="f" ${v.g === 'f' ? 'selected' : ''}>Feminine (red)</option>
         </select><span class="hint" id="wf-ghint"></span></div>
       </div>
       ${emojiPalette()}
       <div class="field" style="margin-top:12px"><label for="wf-cat">Group</label><input class="input" id="wf-cat" list="wf-cats" value="${e(v.cat)}"><datalist id="wf-cats">${cats.map(c => `<option value="${e(c)}">`).join('')}</datalist><span class="hint">Type a new name to start a new group (e.g. “Semaine 2”).</span></div>
       <div class="field"><label for="wf-note">Tip (optional)</label><input class="input" id="wf-note" value="${e(v.note || '')}" placeholder="The t is silent!"></div>
-      ${canSpeak() ? '<button type="button" class="btn small" id="wf-say">🔊 Écouter</button>' : ''}`,
-    actions: [{ label: 'Annuler', cls: 'ghost', value: false }, { label: word ? 'Enregistrer' : 'Ajouter', cls: 'primary', value: true }],
+      ${canSpeak() ? '<button type="button" class="btn small" id="wf-say">🔊 Listen</button>' : ''}`,
+    actions: [{ label: 'Cancel', cls: 'ghost', value: false }, { label: word ? 'Save' : 'Add', cls: 'primary', value: true }],
     onOpen(m) {
       const fr = m.querySelector('#wf-fr'), g = m.querySelector('#wf-g'), hint = m.querySelector('#wf-ghint');
       const upd = () => {
         const auto = genderOf(fr.value, null);
-        hint.textContent = auto ? `Detected: ${auto === 'm' ? 'masculin' : 'féminin'}` : /^l['’]/i.test(fr.value.trim()) ? "l' hides the gender: pick it!" : '';
+        hint.textContent = auto ? `Detected: ${auto === 'm' ? 'masculine' : 'feminine'}` : /^l['’]/i.test(fr.value.trim()) ? "l' hides the gender: pick it!" : '';
       };
       fr.addEventListener('input', upd); upd();
       m.querySelector('.emoji-pal').addEventListener('click', ev => { const b = ev.target.closest('[data-emo]'); if (b) m.querySelector('#wf-emo').value = b.dataset.emo; });
@@ -173,12 +173,12 @@ async function wordForm(word = null) {
     if (g) w.g = g; else delete w.g;
     if (v.note && v.note.trim()) w.note = v.note.trim(); else delete w.note;
     upsertWord(db, w);
-    toast('Mot modifié', { sub: w.fr, icon: '✏️' });
+    toast('Word saved', { sub: w.fr, icon: '✏️' });
   } else {
     const w = makeWord({ fr: v.fr, en: v.en, emoji: v.emoji, g: v.g || null, cat: v.cat, note: v.note });
     if (db.words.some(x => x.fr.trim().toLowerCase() === w.fr.toLowerCase())) { toast('This word is already in the list', { icon: '⚠️' }); return; }
     upsertWord(db, w);
-    toast('Mot ajouté !', { sub: w.fr, icon: '✨' });
+    toast('Word added!', { sub: w.fr, icon: '✨' });
   }
   app.save();
   rerender();
@@ -188,7 +188,7 @@ async function bulkForm() {
   const { db } = app;
   let text = '', cat = 'Semaine ' + (categoriesOf(db.words).filter(c => /^Semaine/.test(c)).length + 2);
   const ok = await openModal({
-    title: 'Coller une liste',
+    title: 'Paste a list',
     body: `<p style="margin-top:0">One word per line. Any of these work:</p>
       <pre class="share-box" style="white-space:pre-wrap;margin:0 0 10px">la lune = moon 🌙
 le soleil ; sun ; ☀️
@@ -197,8 +197,8 @@ manger, to eat</pre>
       <div class="field"><label for="bk-text">Words</label><textarea class="input" id="bk-text" lang="fr" placeholder="la lune = moon 🌙"></textarea></div>
       <div class="field"><label for="bk-cat">Group for these words</label><input class="input" id="bk-cat" value="${e(cat)}"></div>
       <p id="bk-prev" class="muted"></p>
-      <p class="muted" style="font-size:.85rem">Tip: for l' words the gender can't be guessed — edit them afterwards to pick masculin/féminin.</p>`,
-    actions: [{ label: 'Annuler', cls: 'ghost', value: false }, { label: 'Ajouter', cls: 'primary', value: true }],
+      <p class="muted" style="font-size:.85rem">Tip: for l' words the gender can't be guessed — edit them afterwards to pick masculine or feminine.</p>`,
+    actions: [{ label: 'Cancel', cls: 'ghost', value: false }, { label: 'Add', cls: 'primary', value: true }],
     onOpen(m) {
       const ta = m.querySelector('#bk-text'), ci = m.querySelector('#bk-cat'), pv = m.querySelector('#bk-prev');
       const upd = () => {
@@ -218,7 +218,7 @@ manger, to eat</pre>
     added++;
   }
   app.save();
-  toast(`${added} mot${added === 1 ? '' : 's'} ajouté${added === 1 ? '' : 's'}`, { sub: skipped ? `${skipped} already in the list` : 'Words added', icon: '✨' });
+  toast(`${added} word${added === 1 ? '' : 's'} added`, { sub: skipped ? `${skipped} already in the list` : '', icon: '✨' });
   rerender();
 }
 
@@ -230,7 +230,7 @@ function playersTab(el) {
     const pr = app.prog(p.id).prefs;
     return `<div class="panel" data-pid="${e(p.id)}">
       <div class="row">${avatarHtml(p, app.prog(p.id), 'md')}<h3 style="margin:0" class="grow">${e(p.name)}</h3>
-        <button class="btn small" data-act="rename">✏️ Renommer</button></div>
+        <button class="btn small" data-act="rename">✏️ Rename</button></div>
       <div class="grid2" style="margin-top:12px">
         <div class="field"><label>New words per day</label><select class="input" data-pref="newPerDay">${[0, 2, 3, 4, 5, 6, 8, 10, 15].map(n => `<option ${n === pr.newPerDay ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="hint">5 is a good pace. 0 = only review.</span></div>
         <div class="field"><label>Daily goal (points)</label><select class="input" data-pref="goal">${[10, 15, 20, 30, 40].map(n => `<option ${n === pr.goal ? 'selected' : ''}>${n}</option>`).join('')}</select><span class="hint">1 point per right answer (½ in games). Clearing all due cards also counts.</span></div>
@@ -249,7 +249,7 @@ function playersTab(el) {
     const k = s.dataset.pref;
     app.prog(pid).prefs[k] = k === 'mode' ? s.value : +s.value;
     app.save();
-    toast('Enregistré', { icon: '✅', ms: 1500 });
+    toast('Saved', { icon: '✅', ms: 1500 });
   });
   el.addEventListener('click', async ev => {
     if (ev.target.closest('#add-p')) {
@@ -263,8 +263,8 @@ function playersTab(el) {
     if (b.dataset.act === 'rename') {
       let name = p.name;
       const ok = await openModal({
-        title: 'Renommer', body: `<input class="input" id="rn" value="${e(p.name)}" maxlength="20">`,
-        actions: [{ label: 'Annuler', cls: 'ghost', value: false }, { label: 'OK', cls: 'primary', value: true }],
+        title: 'Rename', body: `<input class="input" id="rn" value="${e(p.name)}" maxlength="20">`,
+        actions: [{ label: 'Cancel', cls: 'ghost', value: false }, { label: 'OK', cls: 'primary', value: true }],
         onOpen(m) { m.querySelector('#rn').addEventListener('input', ev2 => { name = ev2.target.value; }); },
       });
       if (ok && name.trim()) { p.name = name.trim(); p.u = Date.now(); app.save(); rerender(); }
@@ -283,14 +283,14 @@ function playersTab(el) {
 // ---------------------------------------------------------------- family sync
 
 export function syncStatusText(s, db = app.db) {
-  if (!db.sync) return '☁️ Synchro off';
-  if (s.status === 'syncing') return '⏳ Synchronisation…';
-  if (s.status === 'offline') return '📴 Hors ligne — will sync when back online';
+  if (!db.sync) return '☁️ Sync is off';
+  if (s.status === 'syncing') return '⏳ Syncing…';
+  if (s.status === 'offline') return '📴 Offline — will sync when back online';
   if (s.status === 'error') return `⚠️ Sync problem: ${s.error || 'unknown'} — will retry`;
   const last = db.sync.last;
   if (!last) return '☁️ Not synced yet';
   const mins = Math.round((Date.now() - last) / 60000);
-  return `✅ Synchronisé ${mins < 1 ? "à l'instant (just now)" : `il y a ${mins} min`}`;
+  return `✅ Synced ${mins < 1 ? 'just now' : `${mins} min ago`}`;
 }
 
 function joinUrl(code) {
@@ -302,7 +302,7 @@ function syncTab(el) {
   if (!s) {
     el.innerHTML = `
       <div class="panel">
-        <h3>☁️ Synchro familiale (family sync)</h3>
+        <h3>☁️ Family sync</h3>
         <p style="margin-top:0">Turn this on to share <b>everything</b> — the kids' progress, XP, croissants, trophies and Mamou's word list — between all your devices (iPad, phone, laptop…). It updates by itself whenever the app is open.</p>
         <p class="muted" style="font-size:.9rem">Your family gets a secret code. Only devices that know the code can see the data. Nothing is ever lost: this device keeps its own copy too.</p>
         <button class="btn primary big" id="create">☁️ Turn on family sync</button>
@@ -311,13 +311,13 @@ function syncTab(el) {
         <h3>Already on another device?</h3>
         <p style="margin-top:0" class="muted">Open the join link from the other device here — or paste the family code:</p>
         <input class="input" id="code" placeholder="mamou-xxxxx-xxxxx-xxxxx-xxxxx" autocapitalize="off" autocomplete="off" spellcheck="false">
-        <button class="btn" id="join" style="margin-top:10px">Rejoindre (join)</button>
+        <button class="btn" id="join" style="margin-top:10px">Join</button>
       </div>`;
     el.querySelector('#create').addEventListener('click', async () => {
       app.db.sync = { code: makeFamilyCode(), base: null, last: null };
       app.save();
       const r = await app.sync();
-      if (r.ok) toast('Synchro activée !', { sub: 'Now open the join link on your other devices', icon: '☁️', gold: true });
+      if (r.ok) toast('Family sync is on!', { sub: 'Now open the join link on your other devices', icon: '☁️', gold: true });
       else toast('Could not reach the cloud yet', { sub: 'It will keep trying', icon: '⚠️' });
       rerender();
     });
@@ -331,38 +331,38 @@ function syncTab(el) {
   const url = joinUrl(s.code);
   el.innerHTML = `
     <div class="panel">
-      <h3>☁️ Synchro familiale</h3>
+      <h3>☁️ Family sync</h3>
       <p id="sync-status" style="font-weight:600;margin-top:0"></p>
-      <button class="btn primary" id="now">🔄 Synchroniser maintenant</button>
+      <button class="btn primary" id="now">🔄 Sync now</button>
     </div>
     <div class="panel">
       <h3>Add another device</h3>
       <p style="margin-top:0">Open this link on the other device (text or email it to yourself). Keep it in the family — anyone with it can see and change the kids' progress.</p>
       <div class="share-box" id="url">${e(url)}</div>
       <div class="row" style="margin-top:10px">
-        <button class="btn primary" id="copy">📋 Copier le lien</button>
-        ${navigator.share ? '<button class="btn" id="native">📤 Partager…</button>' : ''}
+        <button class="btn primary" id="copy">📋 Copy link</button>
+        ${navigator.share ? '<button class="btn" id="native">📤 Share…</button>' : ''}
       </div>
       <p class="muted" style="font-size:.85rem">Family code: <code>${e(s.code)}</code></p>
     </div>
     <div class="panel danger-zone">
       <h3>Stop syncing on this device</h3>
       <p style="margin-top:0" class="muted">This device keeps everything it has now but stops sharing. Other devices carry on.</p>
-      <button class="btn red" id="leave">Arrêter la synchro ici</button>
+      <button class="btn red" id="leave">Stop syncing here</button>
     </div>`;
   const off = onSyncStatus(st => { const p = el.querySelector('#sync-status'); if (p) p.textContent = syncStatusText(st); });
   const tick = setInterval(() => { const p = el.querySelector('#sync-status'); if (p) p.textContent = syncStatusText(syncStatus()); }, 30000);
   el.querySelector('#now').addEventListener('click', async () => {
     const r = await app.sync();
-    toast(r.ok ? (r.changed ? 'Synchronisé — new changes arrived' : 'Synchronisé — already up to date') : 'Sync failed — will retry', { icon: r.ok ? '✅' : '⚠️' });
+    toast(r.ok ? (r.changed ? 'Synced — new changes arrived' : 'Synced — already up to date') : 'Sync failed — will retry', { icon: r.ok ? '✅' : '⚠️' });
   });
   el.querySelector('#copy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(url); toast('Lien copié !', { icon: '📋' }); }
+    try { await navigator.clipboard.writeText(url); toast('Link copied!', { icon: '📋' }); }
     catch { toast('Select the link and copy it', { icon: '📋' }); }
   });
   el.querySelector('#native')?.addEventListener('click', () => navigator.share({ title: 'Les Cartes de Mamou — family sync', url }).catch(() => {}));
   el.querySelector('#leave').addEventListener('click', async () => {
-    if (!(await confirmModal('Arrêter la synchro ?', 'This device stops sharing progress. You can join again later with the link.', { yes: 'Arrêter', danger: true }))) return;
+    if (!(await confirmModal('Stop syncing on this device?', 'This device stops sharing progress. You can join again later with the link.', { yes: 'Stop syncing', danger: true }))) return;
     app.db.sync = null; app.save(); rerender();
   });
   return () => { off(); clearInterval(tick); };
@@ -382,12 +382,12 @@ export async function handleJoinLink(code, { stay = false } = {}) {
     if (!stay) app.go('/'); else rerender();
     return;
   }
-  const ok = await confirmModal('☁️ Rejoindre la famille ?', 'This device will share progress, trophies and words with your other devices. Anything already on this device is combined with the family\'s — nothing is lost.', { yes: 'Rejoindre', no: 'Annuler' });
+  const ok = await confirmModal('☁️ Join the family?', 'This device will share progress, trophies and words with your other devices. Anything already on this device is combined with the family\'s — nothing is lost.', { yes: 'Join', no: 'Cancel' });
   if (!ok) { if (!stay) app.go('/'); return; }
   app.db.sync = { code, base: null, last: null };
   app.save();
   const r = await app.sync();
-  toast(r.ok ? 'Bienvenue dans la famille !' : 'Joined — waiting for the connection', { sub: r.ok ? 'Progress is now shared' : 'It will sync when online', icon: '☁️', gold: r.ok });
+  toast(r.ok ? 'Joined the family!' : 'Joined — waiting for the connection', { sub: r.ok ? 'Progress is now shared' : 'It will sync when online', icon: '☁️', gold: r.ok });
   if (!stay) app.go('/'); else rerender();
 }
 
@@ -407,8 +407,8 @@ function shareTab(el) {
       <p style="margin-top:0">Edit the words on one device (say, Mamou's phone), then send this link to the kids by text or email. Opening it offers to import the words. <b>Progress stays on each device</b> — only the word list travels.</p>
       <div class="share-box" id="url">${e(url)}</div>
       <div class="row" style="margin-top:10px">
-        <button class="btn primary" id="copy">📋 Copier le lien</button>
-        ${navigator.share ? '<button class="btn" id="native">📤 Partager…</button>' : ''}
+        <button class="btn primary" id="copy">📋 Copy link</button>
+        ${navigator.share ? '<button class="btn" id="native">📤 Share…</button>' : ''}
       </div>
       <p class="muted" style="font-size:.85rem">${app.db.words.length} words · ${url.length} characters</p>
     </div>
@@ -416,10 +416,10 @@ function shareTab(el) {
       <h3>Received a link or code?</h3>
       <p style="margin-top:0" class="muted">Just open the link on this device. Or paste it here:</p>
       <textarea class="input" id="paste" placeholder="https://…#import=…" style="min-height:80px"></textarea>
-      <button class="btn primary" id="do-import" style="margin-top:10px">Importer</button>
+      <button class="btn primary" id="do-import" style="margin-top:10px">Import</button>
     </div>`;
   el.querySelector('#copy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(url); toast('Lien copié !', { icon: '📋' }); }
+    try { await navigator.clipboard.writeText(url); toast('Link copied!', { icon: '📋' }); }
     catch {
       const r = document.createRange(); r.selectNodeContents(el.querySelector('#url'));
       const s = getSelection(); s.removeAllRanges(); s.addRange(r);
@@ -449,7 +449,7 @@ export async function handleImportLink(code, { stay = false } = {}) {
   const d = diffWordList(app.db, incoming);
   const list = (arr, f) => arr.slice(0, 12).map(f).join(', ') + (arr.length > 12 ? '…' : '');
   const choice = await openModal({
-    title: '📬 Nouveaux mots !',
+    title: '📬 New words!',
     body: `<p>This link has <b>${incoming.length} words</b>.</p>
       <ul style="padding-left:20px">
         <li><b>${d.added.length}</b> new${d.added.length ? `: ${list(d.added, w => `${e(w.emoji || '')} ${e(w.fr)}`)}` : ''}</li>
@@ -459,7 +459,7 @@ export async function handleImportLink(code, { stay = false } = {}) {
       </ul>
       <p class="muted" style="font-size:.9rem"><b>Add &amp; update</b> keeps everything you have. <b>Replace</b> makes this device's list exactly match the link (and drops progress on the removed words).</p>`,
     actions: [
-      { label: 'Annuler', cls: 'ghost', value: null },
+      { label: 'Cancel', cls: 'ghost', value: null },
       ...(d.missing.length ? [{ label: 'Replace', cls: 'red', value: 'replace' }] : []),
       { label: 'Add & update', cls: 'primary', value: 'merge' },
     ],
@@ -467,7 +467,7 @@ export async function handleImportLink(code, { stay = false } = {}) {
   if (choice) {
     const r = applyWordList(app.db, incoming, choice);
     app.save();
-    toast('Mots importés !', { sub: `${r.added} added · ${r.updated} updated${r.removed ? ` · ${r.removed} removed` : ''}`, icon: '📬', gold: true });
+    toast('Words imported!', { sub: `${r.added} added · ${r.updated} updated${r.removed ? ` · ${r.removed} removed` : ''}`, icon: '📬', gold: true });
   }
   if (stay) rerender(); else app.go('/');
 }
@@ -479,19 +479,19 @@ function voiceTab(el) {
   const voices = frenchVoices();
   el.innerHTML = `
     <div class="panel">
-      <h3>Voix française (French voice)</h3>
+      <h3>French voice</h3>
       ${voices.length ? `
         <div class="field"><label for="vc">Voice</label><select class="input" id="vc">${voices.map(v => `<option value="${e(v.voiceURI)}" ${v.voiceURI === s.voice ? 'selected' : ''}>${e(v.name)} (${e(v.lang)})</option>`).join('')}</select></div>
         <div class="field"><label for="rt">Speed: <span id="rtv">${s.rate}</span></label><input type="range" id="rt" min="0.5" max="1.2" step="0.05" value="${s.rate}"></div>
-        <button class="btn" id="test">🔊 Test : « Bonjour, je m'appelle Monsieur Croissant ! »</button>`
+        <button class="btn" id="test">🔊 Test the voice</button>`
       : `<p>No French voice was found on this device, so the 🔊 buttons are hidden. On iPhone/iPad: Settings → Accessibility → Spoken Content → Voices → French. On Windows: Settings → Time & language → Speech → Add voices → Français. Then reload.</p>`}
     </div>
     <div class="panel">
-      <h3>Sons</h3>
+      <h3>Sounds</h3>
       <label class="switch"><input type="checkbox" id="snd" ${s.sound ? 'checked' : ''}><span class="track"></span>Sound effects</label>
     </div>
     <div class="panel">
-      <h3>🔒 Code des grands (optional)</h3>
+      <h3>🔒 Grown-ups' code (optional)</h3>
       <p class="muted" style="margin-top:0">A 4-digit code to keep curious fingers out of this corner. ${s.pin ? '<b>A code is set.</b>' : 'No code set.'}</p>
       <div class="row"><button class="btn" id="setpin">${s.pin ? 'Change code' : 'Set a code'}</button>${s.pin ? '<button class="btn red" id="clearpin">Remove code</button>' : ''}</div>
     </div>`;
@@ -501,14 +501,14 @@ function voiceTab(el) {
   el.querySelector('#test')?.addEventListener('click', () => speak("Bonjour, je m'appelle Monsieur Croissant !"));
   el.querySelector('#snd').addEventListener('change', ev => { s.sound = ev.target.checked; save(); });
   el.querySelector('#setpin').addEventListener('click', async () => {
-    const a = await pinModal('Nouveau code');
+    const a = await pinModal('New code');
     if (!a) return;
-    const b = await pinModal('Encore une fois (again)');
+    const b = await pinModal('Enter it again');
     if (a !== b) { toast('Codes didn\'t match', { icon: '⚠️' }); return; }
     s.pin = await hashPin(a); unlocked = true; app.save();
-    toast('Code enregistré', { icon: '🔒' }); rerender();
+    toast('Code saved', { icon: '🔒' }); rerender();
   });
-  el.querySelector('#clearpin')?.addEventListener('click', () => { s.pin = null; app.save(); toast('Code supprimé', { icon: '🔓' }); rerender(); });
+  el.querySelector('#clearpin')?.addEventListener('click', () => { s.pin = null; app.save(); toast('Code removed', { icon: '🔓' }); rerender(); });
 }
 
 // ---------------------------------------------------------------- backup
@@ -516,19 +516,19 @@ function voiceTab(el) {
 function backupTab(el) {
   el.innerHTML = `
     <div class="panel">
-      <h3>Sauvegarder</h3>
+      <h3>Back up</h3>
       <p style="margin-top:0">Progress lives in this browser on this device. Download a backup now and then — or use it to move progress to another device.</p>
       <button class="btn primary" id="dl">💾 Download backup</button>
     </div>
     <div class="panel">
-      <h3>Restaurer</h3>
+      <h3>Restore</h3>
       <p style="margin-top:0">Load a backup file. <b>Merge</b> combines it with what's here (newest progress wins for each card). <b>Replace</b> throws away what's here.</p>
       <input type="file" id="file" accept=".json,application/json" class="input">
     </div>
     <div class="panel danger-zone">
-      <h3>Tout effacer</h3>
+      <h3>Erase everything</h3>
       <p style="margin-top:0" class="muted">Delete everything on this device and start over with the starter words.</p>
-      <button class="btn red" id="wipe">Tout effacer</button>
+      <button class="btn red" id="wipe">Erase everything</button>
     </div>`;
   el.querySelector('#dl').addEventListener('click', () => {
     const blob = new Blob([exportBackup(app.db)], { type: 'application/json' });
@@ -544,19 +544,19 @@ function backupTab(el) {
     try { other = parseBackup(await f.text()); }
     catch { toast('Not a backup file', { icon: '⚠️' }); return; }
     const choice = await openModal({
-      title: 'Restaurer la sauvegarde',
+      title: 'Restore backup',
       body: `<p>Backup has ${other.profiles.length} player(s) (${other.profiles.map(p => e(p.name)).join(', ')}) and ${other.words.length} words.</p>`,
-      actions: [{ label: 'Annuler', cls: 'ghost', value: null }, { label: 'Replace', cls: 'red', value: 'replace' }, { label: 'Merge', cls: 'primary', value: 'merge' }],
+      actions: [{ label: 'Cancel', cls: 'ghost', value: null }, { label: 'Replace', cls: 'red', value: 'replace' }, { label: 'Merge', cls: 'primary', value: 'merge' }],
     });
     if (!choice) return;
     app.db = choice === 'merge' ? mergeDB(app.db, other) : migrate(other);
     setAudioSettings(app.db.settings);
     app.save();
-    toast('Sauvegarde restaurée !', { icon: '💾', gold: true });
+    toast('Backup restored!', { icon: '💾', gold: true });
     rerender();
   });
   el.querySelector('#wipe').addEventListener('click', async () => {
-    if (!(await confirmModal('Tout effacer ?', 'Every player, all progress and the word list will be deleted from this device.', { yes: 'Tout effacer', danger: true }))) return;
+    if (!(await confirmModal('Erase everything?', 'Every player, all progress and the word list will be deleted from this device.', { yes: 'Erase everything', danger: true }))) return;
     app.db = defaultDB();
     app.save();
     app.go('/');

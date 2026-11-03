@@ -21,20 +21,20 @@ export function render() {
   let a = ps[0].id, b = ps[1].id;
   const face = matchMedia('(orientation: portrait) and (min-width: 600px)').matches;
   const root = setView(`
-    <div class="topbar"><a class="btn small" href="#/">←</a><b>Le Duel</b></div>
+    <div class="topbar"><a class="btn small" href="#/">←</a><b>Duel</b></div>
     <h1 class="screen-title center">⚔️ Le Duel ⚔️</h1>
     <p class="screen-sub center">First to ${TARGET} points wins. A wrong answer locks you out for the round!</p>
     <div class="panel">
       <div class="grid2">
-        <div class="field"><label for="d1">Joueur 1 <span class="chip blue">bleu</span></label><select class="input" id="d1">${ps.map(p => `<option value="${e(p.id)}" ${p.id === a ? 'selected' : ''}>${e(p.name)}</option>`).join('')}</select></div>
-        <div class="field"><label for="d2">Joueur 2 <span class="chip red">rouge</span></label><select class="input" id="d2">${ps.map(p => `<option value="${e(p.id)}" ${p.id === b ? 'selected' : ''}>${e(p.name)}</option>`).join('')}</select></div>
+        <div class="field"><label for="d1">Player 1 <span class="chip blue">blue</span></label><select class="input" id="d1">${ps.map(p => `<option value="${e(p.id)}" ${p.id === a ? 'selected' : ''}>${e(p.name)}</option>`).join('')}</select></div>
+        <div class="field"><label for="d2">Player 2 <span class="chip red">red</span></label><select class="input" id="d2">${ps.map(p => `<option value="${e(p.id)}" ${p.id === b ? 'selected' : ''}>${e(p.name)}</option>`).join('')}</select></div>
       </div>
       <div class="field"><span class="lbl">Layout</span>
         <select class="input" id="dl">
           <option value="side" ${face ? '' : 'selected'}>Side by side (laptop: keys A S D F vs H J K L)</option>
-          <option value="face" ${face ? 'selected' : ''}>Face à face (tablet flat on the table)</option>
+          <option value="face" ${face ? 'selected' : ''}>Face to face (tablet flat on the table)</option>
         </select></div>
-      <button class="btn red big block" id="go">En garde ! ⚔️</button>
+      <button class="btn red big block" id="go">Start the duel! ⚔️</button>
     </div>`);
   root.querySelector('#go').addEventListener('click', () => {
     a = root.querySelector('#d1').value; b = root.querySelector('#d2').value;
@@ -53,7 +53,7 @@ function duel(aId, bId, face) {
   let q = null, roundOver = false, lastId = null, over = false;
 
   const root = setView(`
-    <div class="topbar"><a class="btn small" href="#/duel">✕</a><b>Le Duel</b><span class="muted" style="margin-left:auto">First to ${TARGET}</span></div>
+    <div class="topbar"><a class="btn small" href="#/duel">✕</a><b>Duel</b><span class="muted" style="margin-left:auto">First to ${TARGET}</span></div>
     <div class="duel ${face ? 'face' : ''}">
       ${players.map((pl, i) => `
         <div class="side p${i + 1}" id="side${i}">
@@ -141,15 +141,15 @@ function duel(aId, bId, face) {
     setView(`
       <div class="summary" style="margin-top:20px">
         <div class="mascot lg bounce" style="margin:0 auto">${mascotSvg('cool')}</div>
-        <h1 class="screen-title">Victoire de ${e(w.p.name)} !</h1>
-        <p class="muted">${e(w.p.name)} wins ${w.score}–${l.score}. Bien joué, tous les deux ! (Well played, both of you!)</p>
+        <h1 class="screen-title">${e(w.p.name)} wins!</h1>
+        <p class="muted">${e(w.p.name)} ${w.score}–${l.score}. Well played, both of you! (Bien joué !)</p>
         <div class="podium">
           <div class="spot p2">${avatarHtml(l.p, l.prog, 'lg')}<div><b>${e(l.p.name)}</b></div><div class="block">${l.score}</div><div class="muted">+${gl} XP · +${cl} 🥐</div></div>
           <div class="spot p1">${avatarHtml(w.p, w.prog, 'xl')}<div><b>👑 ${e(w.p.name)}</b></div><div class="block">${w.score}</div><div class="muted">+${gw} XP · +${cw} 🥐</div></div>
         </div>
         <div class="row" style="justify-content:center;margin-top:20px">
-          <a class="btn big" href="#/">🏠 Accueil</a>
-          <button class="btn red big" id="again">⚔️ Revanche !</button>
+          <a class="btn big" href="#/">🏠 Home</a>
+          <button class="btn red big" id="again">⚔️ Rematch!</button>
         </div>
       </div>`);
     document.getElementById('again').addEventListener('click', () => duel(aId, bId, face));

@@ -35,20 +35,20 @@ export function render() {
           ${avatarHtml(p, prog, 'lg')}
           <div class="pname">${e(p.name)}</div>
           <div class="prank">${rank.emoji} ${e(rank.name)}</div>
-          <div class="row"><span class="chip blue">⭐ Niv. ${lvl}</span><span class="chip red">🔥 ${streak}</span></div>
+          <div class="row"><span class="chip blue">⭐ Level ${lvl}</span><span class="chip red">🔥 ${streak}</span></div>
         </button>`;
       }).join('')}
       <button class="panel player-card add-player" id="add-player">
-        <span class="plus">＋</span><span>Nouveau joueur<br><small>(new player)</small></span>
+        <span class="plus">＋</span><span>New player</span>
       </button>
     </div>
 
     <div class="home-actions">
-      ${db.profiles.length >= 2 ? '<a class="btn red big" href="#/duel">⚔️ Le Duel</a>' : ''}
-      <a class="btn big" href="#/grown-ups">⚙️ Coin des grands</a>
+      ${db.profiles.length >= 2 ? '<a class="btn red big" href="#/duel">⚔️ Duel</a>' : ''}
+      <a class="btn big" href="#/grown-ups">⚙️ Grown-ups</a>
     </div>
 
-    <div class="panel factbox" style="margin-top:24px"><b>Le saviez-vous ?</b> (Did you know?) ${e(pick(FUN_FACTS))}</div>
+    <div class="panel factbox" style="margin-top:24px"><b>Did you know?</b> ${e(pick(FUN_FACTS))}</div>
     ${skylineSvg()}
     <footer class="foot">${db.sync ? '<a href="#/grown-ups/sync" id="sync-line" style="color:inherit"></a><br>' : ''}Fait avec amour pour Mamou et ses élèves ❤️</footer>
   `);
@@ -70,10 +70,10 @@ export async function newPlayer() {
   let animal = pick(ANIMALS);
   let name = '';
   const res = await openModal({
-    title: 'Nouveau joueur',
-    body: `<div class="field"><label for="np-name">Name</label><input class="input" id="np-name" maxlength="20" autocomplete="off" placeholder="Prénom"></div>
+    title: 'New player',
+    body: `<div class="field"><label for="np-name">Name</label><input class="input" id="np-name" maxlength="20" autocomplete="off" placeholder="First name"></div>
       <div class="field"><span class="lbl">Choose your animal</span><div class="animal-grid">${ANIMALS.map(a => `<button type="button" data-a="${a}" class="${a === animal ? 'on' : ''}">${a}</button>`).join('')}</div></div>`,
-    actions: [{ label: 'Annuler', cls: 'ghost', value: null }, { label: 'Créer', cls: 'primary', value: 'ok' }],
+    actions: [{ label: 'Cancel', cls: 'ghost', value: null }, { label: 'Create', cls: 'primary', value: 'ok' }],
     onOpen(el, close) {
       el.querySelector('.animal-grid').addEventListener('click', ev => {
         const b = ev.target.closest('[data-a]'); if (!b) return;
