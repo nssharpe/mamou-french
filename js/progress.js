@@ -210,3 +210,33 @@ export function equip(prog, itemId) {
   if (!item || !prog.owned.includes(itemId)) return;
   prog.equip[item.slot] = prog.equip[item.slot] === itemId ? null : itemId;
 }
+
+// ---------- daily surprise chest (unlocked by meeting the daily goal) ----------
+
+export const CHEST_PRIZES = [
+  { weight: 40, croissants: 5, label: '5 croissants' },
+  { weight: 28, croissants: 10, label: '10 croissants' },
+  { weight: 16, croissants: 20, label: '20 croissants !' },
+  { weight: 8, freeze: true, croissants: 5, label: 'Un gel de série 🧊 + 5 croissants' },
+  { weight: 6, xp: 50, croissants: 5, label: '50 XP bonus + 5 croissants' },
+  { weight: 2, croissants: 75, label: 'LE JACKPOT : 75 croissants !!!' },
+];
+
+export function chestReady(prog, now) {
+  const d = prog.days[dayKey(now)];
+  return !!(d && d.goal && !d.chest);
+}
+
+// Opens today's chest. Returns the prize (croissants/freeze applied; XP is for the caller to award).
+export function openChest(prog, now, rng = Math.random) {
+  if (!chestReady(prog, now)) return null;
+  const total = CHEST_PRIZES.reduce((s, p) => s + p.weight, 0);
+  let r = rng() * total;
+  let prize = CHEST_PRIZES[0];
+  for (const p of CHEST_PRIZES) { if ((r -= p.weight) < 0) { prize = p; break; } }
+  if (prize.freeze && prog.streak.freezes >= 2) prize = CHEST_PRIZES[2];
+  prog.days[dayKey(now)].chest = true;
+  prog.croissants += prize.croissants || 0;
+  if (prize.freeze) prog.streak.freezes++;
+  return prize;
+}

@@ -156,3 +156,22 @@ test('random tapping never out-earns knowing the words', async () => {
     assert.ok(perfect.xp > guess.xp, `perfect ${perfect.xp} should beat ${acc * 100}% accuracy ${guess.xp}`);
   }
 });
+
+test('daily chest: only after the goal, once a day', async () => {
+  const { openChest, chestReady } = await import('../js/progress.js');
+  const p = newProgress();
+  assert.equal(openChest(p, T0), null);
+  p.prefs.goal = 1;
+  recordAnswer(p, { cardId: 'a:r', before: newCard(), after: newCard(), correct: true, combo: 0, now: T0 });
+  updateGoal(p, T0);
+  assert.ok(chestReady(p, T0));
+  const prize = openChest(p, T0, () => 0); // first prize
+  assert.equal(prize.croissants, 5);
+  assert.equal(p.croissants, 5);
+  assert.equal(openChest(p, T0), null);
+  p.streak.freezes = 2;
+  p.days['2026-11-04'] = { goal: true };
+  const pz = openChest(p, day(1), () => 0.85); // would be a freeze, but already holding 2
+  assert.equal(p.streak.freezes, 2);
+  assert.ok(pz.croissants >= 5);
+});

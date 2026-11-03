@@ -2,13 +2,13 @@
 
 import { app, celebrate, hasCelebrations } from '../app.js';
 import { todayPlan, peekToday, today } from '../session.js';
-import { levelInfo, rankFor, nextRank, displayStreak, checkStreak, goalProgress, weekXp } from '../progress.js';
+import { levelInfo, rankFor, nextRank, displayStreak, checkStreak, goalProgress, weekXp, chestReady, openChest } from '../progress.js';
 import { mascotHtml, bubbleHtml, setMascot, avatarHtml } from '../art.js';
 import { topbar } from './common.js';
 import { e, setView, frenchDate, greeting, openModal } from '../ui.js';
 import { FUN_FACTS, TOUR, ANIMALS, MASCOT_TAPS, ACHIEVEMENTS } from '../data.js';
 import { pick, plural } from '../util.js';
-import { toast } from '../fx.js';
+import { toast, confetti, croissantRain } from '../fx.js';
 import { sfx, setAudioSettings } from '../audio.js';
 import { reward } from '../app.js';
 
@@ -70,6 +70,11 @@ export async function render({ pid }) {
       `}
     </div>
 
+    ${chestReady(prog, now) ? `<button class="panel chest-cta" id="chest">
+      <span class="chest" aria-hidden="true">🎁</span>
+      <span><b>Ton coffre du jour !</b><br><span class="muted">Daily goal done — open your surprise!</span></span>
+    </button>` : ''}
+
     <div class="status-grid">
       <div class="panel">
         <div class="ring" style="--p:${goal.pct}"><span>${goal.met ? '✓' : Math.round(goal.pct * 100) + '%'}</span></div>
@@ -121,6 +126,28 @@ export async function render({ pid }) {
   });
 
   root.querySelector('#my-settings').addEventListener('click', () => kidSettings(pid));
+
+  root.querySelector('#chest')?.addEventListener('click', async ev => {
+    const btn = ev.currentTarget;
+    if (btn.dataset.opening) return;
+    btn.dataset.opening = '1';
+    btn.classList.add('opening');
+    sfx.whoosh();
+    await new Promise(r => setTimeout(r, 1100));
+    const prize = openChest(prog, Date.now());
+    if (!prize) return;
+    if (prize.xp) reward(pid, { xp: prize.xp, quiet: true });
+    app.save();
+    sfx.fanfare(); confetti({ count: 180 });
+    if (prize.croissants >= 20) croissantRain(prize.croissants >= 75 ? 40 : 18);
+    await openModal({
+      body: `<div class="celebrate"><div class="big-emoji">${prize.croissants >= 75 ? '💰' : prize.freeze ? '🧊' : prize.xp ? '⭐' : '🥐'}</div>
+        <h2>${prize.croissants >= 75 ? 'JACKPOT !' : 'Surprise !'}</h2><p style="font-size:1.15rem">${e(prize.label)}</p>
+        <p class="muted">Reviens demain pour un autre coffre ! (Come back tomorrow for another one!)</p></div>`,
+      actions: [{ label: 'Merci !', cls: 'primary big' }],
+    });
+    app.go(`/p/${pid}`);
+  });
 
   if (!prog.onboarded) await onboard(pid);
   else if (hasCelebrations(pid)) await celebrate(pid);
