@@ -116,10 +116,12 @@ pauses at 0, exactly as the extension does today.
   highlights the app as the "best pick right now". Minimums are enforced
   indirectly by the other apps' maxes.
 - **Guaranteed share (my call):** the settings page shows each app's
-  guaranteed share, which is `max(min, 100% − sum of the other apps' maxes)`.
-  When a min isn't backed up by the other caps it warns in plain words, e.g.
-  "Spelling could still end up at 0%. Lower Typing's max to 45% to guarantee
-  25%."
+  guaranteed share, which is `100% − sum of the other apps' maxes` (never below
+  0%). When that's below the app's min, it warns in plain words, e.g.
+  "Spelling could still end up at 0%. The other apps' maxes add up to 110% —
+  bring them down to 75% or less to guarantee 25%." *(Corrected while
+  planning: an earlier example said lowering Typing to 45% was enough, which
+  was wrong.)*
 - **Cold start (my call):** caps are measured against whichever is larger: the
   kid's actual trailing-7-day ticket total, or a **baseline week** (default 150
   tickets, editable). So on a fresh week Zyler can earn up to 30% × 150 = 45 AMC
