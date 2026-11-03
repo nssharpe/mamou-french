@@ -8,6 +8,8 @@ import { FUN_FACTS, ANIMALS } from '../data.js';
 import { e, openModal, setView, greeting } from '../ui.js';
 import { pick } from '../util.js';
 import { sfx } from '../audio.js';
+import { onSyncStatus } from '../cloud.js';
+import { syncStatusText } from './settings.js';
 
 export function render() {
   const { db } = app;
@@ -48,7 +50,7 @@ export function render() {
 
     <div class="panel factbox" style="margin-top:24px"><b>Le saviez-vous ?</b> (Did you know?) ${e(pick(FUN_FACTS))}</div>
     ${skylineSvg()}
-    <footer class="foot">Fait avec amour pour Mamou et ses élèves ❤️</footer>
+    <footer class="foot">${db.sync ? '<a href="#/grown-ups/sync" id="sync-line" style="color:inherit"></a><br>' : ''}Fait avec amour pour Mamou et ses élèves ❤️</footer>
   `);
 
   root.querySelectorAll('[data-pid]').forEach(b => b.addEventListener('click', () => {
@@ -59,6 +61,9 @@ export function render() {
 
   const m = root.querySelector('#home-mascot');
   m.addEventListener('click', () => { sfx.tap(); setMascot(m, 'wink', 'wobble'); });
+
+  const line = root.querySelector('#sync-line');
+  if (line) return onSyncStatus(st => { line.textContent = syncStatusText(st); });
 }
 
 export async function newPlayer() {

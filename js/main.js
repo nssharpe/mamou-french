@@ -1,8 +1,8 @@
 // Entry point: load data, handle share links, and route between screens.
 
-import { app } from './app.js';
+import { app, startSyncLoop } from './app.js';
 import { sfx, primeSpeech } from './audio.js';
-import { handleImportLink } from './screens/settings.js';
+import { handleImportLink, handleJoinLink } from './screens/settings.js';
 
 const routes = [
   [/^\/?$/, () => import('./screens/home.js')],
@@ -24,6 +24,10 @@ let renderSeq = 0;
 
 async function route() {
   const hash = decodeURIComponent(location.hash.replace(/^#/, ''));
+  if (hash.startsWith('join=')) {
+    await handleJoinLink(hash.slice(5));
+    return;
+  }
   if (hash.startsWith('import=')) {
     await handleImportLink(hash.slice(7));
     return;
@@ -56,6 +60,7 @@ window.addEventListener('hashchange', route);
 // Unlock audio on the first touch (iOS needs a user gesture).
 window.addEventListener('pointerdown', () => { sfx.unlock(); primeSpeech(); }, { once: true });
 route();
+startSyncLoop();
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   navigator.serviceWorker.register('sw.js').catch(() => {});

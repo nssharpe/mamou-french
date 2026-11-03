@@ -66,10 +66,26 @@ Open **⚙️ Coin des grands → 📝 Mots**.
 - **New words per day** (5 by default), the **daily goal**, and the card style
   are set per kid under **👪 Joueurs**.
 
-### Sending a word list to another device
+### Family sync: the same progress on every device
 
-Progress is stored in each device's browser. To get the same words onto every
-device, open **🔗 Partager**, copy the link, and text or email it. Opening the
+Open **☁️ Synchro** and tap **Turn on family sync**. Then send the join link it
+shows to every other device (text or email) and open it there. From then on,
+progress, XP, croissants, trophies, shop items and the word list are shared
+automatically whenever the app is open. It also works offline and catches up
+later.
+
+- The family gets a long secret code. Only devices with the link can see the
+  data, so keep it in the family.
+- Joining never wipes anything. A device's existing progress is combined with
+  the family's.
+- Croissants spent on one device stay spent, and XP earned on two devices
+  adds up.
+- **Stop syncing on this device** keeps everything that's already on it.
+
+### Sending a word list to a device outside the family
+
+With family sync on, word changes travel by themselves. For a device that isn't
+in the family, open **🔗 Partager**, copy the link, and text or email it. Opening the
 link on another device shows what's new or changed and offers to **Add &
 update** or **Replace**. Only the word list travels, never the kids' progress.
 

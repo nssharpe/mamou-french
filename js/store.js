@@ -34,6 +34,7 @@ export function newProgress() {
     prefs: { ...DEFAULT_PREFS },
     seenLevel: 1,
     onboarded: false,
+    epoch: 0, // set when progress is reset, so sync knows the old progress is gone
   };
 }
 
@@ -55,6 +56,8 @@ export function defaultDB() {
     words: SEED_WORDS.map(w => ({ ...w, u: 0 })),
     deleted: {},
     disabledCats: [],
+    deletedProfiles: {},
+    sync: null, // { code, base, last } once family sync is on
     profiles,
     progress,
     settings: { sound: true, voice: null, rate: 0.85, pin: null },
@@ -70,6 +73,8 @@ export function migrate(db) {
   out.v = DB_VERSION;
   out.words = Array.isArray(db.words) ? db.words : base.words;
   out.deleted = db.deleted || {};
+  out.deletedProfiles = db.deletedProfiles || {};
+  out.sync = db.sync || null;
   out.disabledCats = db.disabledCats || [];
   out.profiles = Array.isArray(db.profiles) ? db.profiles : base.profiles;
   out.settings = { ...base.settings, ...(db.settings || {}) };
@@ -125,11 +130,12 @@ export function addProfile(db, name, animal) {
 
 export function removeProfile(db, id) {
   db.profiles = db.profiles.filter(p => p.id !== id);
+  db.deletedProfiles = { ...(db.deletedProfiles || {}), [id]: Date.now() };
   delete db.progress[id];
 }
 
 export function resetProgress(db, id) {
-  db.progress[id] = newProgress();
+  db.progress[id] = { ...newProgress(), epoch: Date.now() };
 }
 
 // ---------- word list editing ----------

@@ -12,8 +12,10 @@ import { toast } from '../fx.js';
 import { frenchVoices, speak, setAudioSettings, canSpeak } from '../audio.js';
 import { ANIMALS } from '../data.js';
 import { avatarHtml } from '../art.js';
+import { makeFamilyCode, isFamilyCode } from '../sync.js';
+import { onSyncStatus, syncStatus } from '../cloud.js';
 
-const TABS = { words: '📝 Mots', players: '👪 Joueurs', share: '🔗 Partager', voice: '🔊 Son & voix', backup: '💾 Sauvegarde' };
+const TABS = { words: '📝 Mots', players: '👪 Joueurs', sync: '☁️ Synchro', share: '🔗 Partager', voice: '🔊 Son & voix', backup: '💾 Sauvegarde' };
 
 const EMOJI = ('👋 🙏 👍 👎 ✅ ❌ ❤️ 😀 😢 😡 😴 🤔 🥳 🐱 🐶 🐦 🐟 🐴 🐮 🐷 🐭 🐰 🦊 🐻 🐼 🐸 🐵 🦁 🐯 🐘 🦒 🐢 🐍 🦋 🐝 🐌 🐞 ' +
   '🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🍒 🥕 🥔 🍅 🥖 🥐 🧀 🥚 🥛 ☕ 🍵 🧃 💧 🍰 🍫 🍦 🍕 🍔 🍟 🍝 🥗 🍲 🍽️ ' +
@@ -38,7 +40,7 @@ export async function render({ params }) {
     <div class="tabs">${Object.entries(TABS).map(([k, n]) => `<a class="btn small ${k === tab ? 'on' : ''}" href="#/grown-ups/${k}">${n}</a>`).join('')}</div>
     <div id="tab"></div>`);
   const el = root.querySelector('#tab');
-  ({ words: wordsTab, players: playersTab, share: shareTab, voice: voiceTab, backup: backupTab })[tab](el);
+  return ({ words: wordsTab, players: playersTab, sync: syncTab, share: shareTab, voice: voiceTab, backup: backupTab })[tab](el);
 }
 
 const rerender = () => window.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -278,10 +280,121 @@ function playersTab(el) {
   });
 }
 
+// ---------------------------------------------------------------- family sync
+
+export function syncStatusText(s, db = app.db) {
+  if (!db.sync) return '☁️ Synchro off';
+  if (s.status === 'syncing') return '⏳ Synchronisation…';
+  if (s.status === 'offline') return '📴 Hors ligne — will sync when back online';
+  if (s.status === 'error') return `⚠️ Sync problem: ${s.error || 'unknown'} — will retry`;
+  const last = db.sync.last;
+  if (!last) return '☁️ Not synced yet';
+  const mins = Math.round((Date.now() - last) / 60000);
+  return `✅ Synchronisé ${mins < 1 ? "à l'instant (just now)" : `il y a ${mins} min`}`;
+}
+
+function joinUrl(code) {
+  return `${location.origin}${location.pathname}#join=${code}`;
+}
+
+function syncTab(el) {
+  const s = app.db.sync;
+  if (!s) {
+    el.innerHTML = `
+      <div class="panel">
+        <h3>☁️ Synchro familiale (family sync)</h3>
+        <p style="margin-top:0">Turn this on to share <b>everything</b> — the kids' progress, XP, croissants, trophies and Mamou's word list — between all your devices (iPad, phone, laptop…). It updates by itself whenever the app is open.</p>
+        <p class="muted" style="font-size:.9rem">Your family gets a secret code. Only devices that know the code can see the data. Nothing is ever lost: this device keeps its own copy too.</p>
+        <button class="btn primary big" id="create">☁️ Turn on family sync</button>
+      </div>
+      <div class="panel">
+        <h3>Already on another device?</h3>
+        <p style="margin-top:0" class="muted">Open the join link from the other device here — or paste the family code:</p>
+        <input class="input" id="code" placeholder="mamou-xxxxx-xxxxx-xxxxx-xxxxx" autocapitalize="off" autocomplete="off" spellcheck="false">
+        <button class="btn" id="join" style="margin-top:10px">Rejoindre (join)</button>
+      </div>`;
+    el.querySelector('#create').addEventListener('click', async () => {
+      app.db.sync = { code: makeFamilyCode(), base: null, last: null };
+      app.save();
+      const r = await app.sync();
+      if (r.ok) toast('Synchro activée !', { sub: 'Now open the join link on your other devices', icon: '☁️', gold: true });
+      else toast('Could not reach the cloud yet', { sub: 'It will keep trying', icon: '⚠️' });
+      rerender();
+    });
+    el.querySelector('#join').addEventListener('click', () => {
+      const v = el.querySelector('#code').value.trim();
+      handleJoinLink(v.includes('join=') ? v.split('join=')[1] : v, { stay: true });
+    });
+    return;
+  }
+
+  const url = joinUrl(s.code);
+  el.innerHTML = `
+    <div class="panel">
+      <h3>☁️ Synchro familiale</h3>
+      <p id="sync-status" style="font-weight:600;margin-top:0"></p>
+      <button class="btn primary" id="now">🔄 Synchroniser maintenant</button>
+    </div>
+    <div class="panel">
+      <h3>Add another device</h3>
+      <p style="margin-top:0">Open this link on the other device (text or email it to yourself). Keep it in the family — anyone with it can see and change the kids' progress.</p>
+      <div class="share-box" id="url">${e(url)}</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="copy">📋 Copier le lien</button>
+        ${navigator.share ? '<button class="btn" id="native">📤 Partager…</button>' : ''}
+      </div>
+      <p class="muted" style="font-size:.85rem">Family code: <code>${e(s.code)}</code></p>
+    </div>
+    <div class="panel danger-zone">
+      <h3>Stop syncing on this device</h3>
+      <p style="margin-top:0" class="muted">This device keeps everything it has now but stops sharing. Other devices carry on.</p>
+      <button class="btn red" id="leave">Arrêter la synchro ici</button>
+    </div>`;
+  const off = onSyncStatus(st => { const p = el.querySelector('#sync-status'); if (p) p.textContent = syncStatusText(st); });
+  const tick = setInterval(() => { const p = el.querySelector('#sync-status'); if (p) p.textContent = syncStatusText(syncStatus()); }, 30000);
+  el.querySelector('#now').addEventListener('click', async () => {
+    const r = await app.sync();
+    toast(r.ok ? (r.changed ? 'Synchronisé — new changes arrived' : 'Synchronisé — already up to date') : 'Sync failed — will retry', { icon: r.ok ? '✅' : '⚠️' });
+  });
+  el.querySelector('#copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(url); toast('Lien copié !', { icon: '📋' }); }
+    catch { toast('Select the link and copy it', { icon: '📋' }); }
+  });
+  el.querySelector('#native')?.addEventListener('click', () => navigator.share({ title: 'Les Cartes de Mamou — family sync', url }).catch(() => {}));
+  el.querySelector('#leave').addEventListener('click', async () => {
+    if (!(await confirmModal('Arrêter la synchro ?', 'This device stops sharing progress. You can join again later with the link.', { yes: 'Arrêter', danger: true }))) return;
+    app.db.sync = null; app.save(); rerender();
+  });
+  return () => { off(); clearInterval(tick); };
+}
+
+/** Called by the router for #join=<code> links (and the paste box). */
+export async function handleJoinLink(code, { stay = false } = {}) {
+  code = decodeURIComponent(String(code || '')).trim();
+  if (!stay) history.replaceState(null, '', location.pathname + '#/');
+  if (!isFamilyCode(code)) {
+    toast('That family code doesn\'t look right', { icon: '⚠️' });
+    if (!stay) app.go('/');
+    return;
+  }
+  if (app.db.sync && app.db.sync.code === code) {
+    toast('This device is already in the family', { icon: '☁️' });
+    if (!stay) app.go('/'); else rerender();
+    return;
+  }
+  const ok = await confirmModal('☁️ Rejoindre la famille ?', 'This device will share progress, trophies and words with your other devices. Anything already on this device is combined with the family\'s — nothing is lost.', { yes: 'Rejoindre', no: 'Annuler' });
+  if (!ok) { if (!stay) app.go('/'); return; }
+  app.db.sync = { code, base: null, last: null };
+  app.save();
+  const r = await app.sync();
+  toast(r.ok ? 'Bienvenue dans la famille !' : 'Joined — waiting for the connection', { sub: r.ok ? 'Progress is now shared' : 'It will sync when online', icon: '☁️', gold: r.ok });
+  if (!stay) app.go('/'); else rerender();
+}
+
 // ---------------------------------------------------------------- sharing
 
 function shareUrl() {
-  const base = location.href.split('#')[0];
+  const base = location.origin + location.pathname;
   return `${base}#import=${encodeWordList(app.db.words)}`;
 }
 
@@ -289,6 +402,7 @@ function shareTab(el) {
   const url = shareUrl();
   el.innerHTML = `
     <div class="panel">
+      ${app.db.sync ? '<p style="margin-top:0;background:var(--vert-light);border:2px solid var(--line);border-radius:12px;padding:8px 12px">☁️ Family sync is on, so word changes reach your other devices by themselves. Use this link only for devices outside the family.</p>' : ''}
       <h3>Send this word list to another device</h3>
       <p style="margin-top:0">Edit the words on one device (say, Mamou's phone), then send this link to the kids by text or email. Opening it offers to import the words. <b>Progress stays on each device</b> — only the word list travels.</p>
       <div class="share-box" id="url">${e(url)}</div>
