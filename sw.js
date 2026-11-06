@@ -21,6 +21,7 @@ const SHELL = [
   'js/games/escargot.js',
   'js/games/memory.js',
   'js/games/speed.js',
+  'js/games/verbes.js',
   'js/hub-client.js',
   'js/hubtickets.js',
   'js/main.js',
@@ -43,6 +44,7 @@ const SHELL = [
   'js/sync.js',
   'js/ui.js',
   'js/util.js',
+  'js/verbs.js',
   'js/words.js',
 ];
 

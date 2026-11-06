@@ -14,6 +14,7 @@ export const GAMES = {
   memory: { name: 'Les Paires', en: 'Memory', icon: '🃏', color: '#E6F0FF', desc: 'Match each French word with its picture.', load: () => import('../games/memory.js') },
   speed: { name: 'Course Rapide', en: 'Speed round', icon: '⏱️', color: '#FDE6E8', desc: '60 seconds. How many can you get?', load: () => import('../games/speed.js') },
   escargot: { name: 'Sauve l\'escargot', en: 'Save the snail', icon: '🐌', color: '#E5F6EC', desc: 'Guess the word letter by letter before the chef gets the snail!', load: () => import('../games/escargot.js') },
+  verbes: { name: 'Les Verbes', en: 'Verbs', icon: '✍️', color: '#EEE8FB', desc: 'Je chante, nous finissons… type the verb in the present tense.', load: () => import('../games/verbes.js'), noPool: true },
 };
 
 export function render({ pid }) {
@@ -25,6 +26,7 @@ export function render({ pid }) {
     memory: s.memoryBest !== null ? `Best: ${s.memoryBest}s` : 'No record yet',
     speed: s.speedBest ? `Best: ${s.speedBest}` : 'No record yet',
     escargot: `${s.penduWins} snail${s.penduWins === 1 ? '' : 's'} saved`,
+    verbes: s.verbBest ? `Best: ${s.verbBest} / 10` : 'No record yet',
   };
   const root = setView(`
     ${topbar(pid)}
@@ -51,7 +53,7 @@ export async function play({ pid, arg }) {
   const mod = await g.load();
   const prog = app.prog(pid);
   const pool = gamePool(prog, app.words(), 8);
-  if (pool.length < 4) {
+  if (pool.length < 4 && !g.noPool) {
     setView(`${topbar(pid, { back: `/p/${pid}/games` })}<div class="panel" style="margin-top:20px"><h2>Not enough words</h2><p>Add at least 4 words in the grown-ups' corner to play.</p></div>`);
     return;
   }

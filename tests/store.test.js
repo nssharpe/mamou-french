@@ -147,3 +147,15 @@ test('kids with different ids but the same name merge', () => {
   assert.equal(m.profiles.length, 2);
   assert.equal(m.progress['p-zyler'].xp, 999);
 });
+
+test('moveCategory swaps whole groups and keeps word order inside each group', async () => {
+  const { moveCategory } = await import('../js/store.js');
+  const w = (id, cat) => ({ id, fr: id, en: id, cat });
+  const db = { words: [w('a1', 'A'), w('b1', 'B'), w('a2', 'A'), w('c1', 'C'), w('b2', 'B')] };
+  assert.equal(moveCategory(db, 'C', -1), true);
+  assert.deepEqual(db.words.map(x => x.id), ['a1', 'a2', 'c1', 'b1', 'b2']);
+  assert.equal(moveCategory(db, 'A', -1), false);
+  assert.equal(moveCategory(db, 'B', 1), false);
+  assert.equal(moveCategory(db, 'A', 1), true);
+  assert.deepEqual(db.words.map(x => x.id), ['c1', 'a1', 'a2', 'b1', 'b2']);
+});

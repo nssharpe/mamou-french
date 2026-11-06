@@ -377,6 +377,16 @@ h1, h2, h3 { line-height: 1.15; }
 .feedback .fb-text { flex: 1; }
 .feedback .fb-title { font-weight: 700; font-size: 1.2rem; }
 .feedback .fb-en { color: var(--ink-soft); font-size: .9rem; }
+.feedback:empty { display: none; }
+.choice { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.choice .btn.on { --bg: var(--ink); --fg: #fff; }
+.verb-line { display: flex; align-items: center; gap: 10px; }
+.verb-pronoun { font-size: 1.6rem; font-weight: 700; flex: none; }
+.type-input.ok { background: var(--vert-light); }
+.type-input.bad { background: var(--rouge-light); }
+.verb-table { max-width: 320px; margin: 14px auto 0; background: var(--paper); border-radius: 12px; }
+.verb-table td:first-child { color: var(--ink-soft); width: 45%; }
+.feedback + .row { margin-top: 12px; }
 @keyframes slideUp { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 .summary { text-align: center; }
@@ -539,6 +549,14 @@ textarea.input { min-height: 140px; resize: vertical; font-family: ui-monospace,
 .word-row .wt .wen { color: var(--ink-soft); font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cat-block { margin-top: 14px; }
 .cat-block.off .word-row { opacity: .6; }
+.cat-head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.cat-toggle { flex: 1 1 200px; min-width: 0; text-align: left; background: none; border: 0; padding: 6px 2px; font-size: 1.17rem; font-weight: 700; color: var(--ink); cursor: pointer; border-radius: 10px; }
+.cat-toggle:hover { background: var(--or-light); }
+.cat-toggle:focus-visible { outline: 3px solid var(--bleu); outline-offset: 2px; }
+.cat-toggle .caret { display: inline-block; width: 1.1em; }
+.cat-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.cat-actions .btn.icon { width: 40px; min-height: 38px; padding: 4px; }
+.cat-words { margin-top: 6px; }
 .switch { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; font-size: .9rem; }
 .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .switch .track { width: 46px; height: 26px; border-radius: 999px; border: 2.5px solid var(--line); background: #E3DDD1; position: relative; transition: background .2s; flex: none; }

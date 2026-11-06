@@ -2,7 +2,7 @@
 
 import { app } from '../app.js';
 import {
-  upsertWord, deleteWord, moveWord, encodeWordList, decodeWordList, diffWordList, applyWordList,
+  upsertWord, deleteWord, moveWord, moveCategory, encodeWordList, decodeWordList, diffWordList, applyWordList,
   addProfile, removeProfile, resetProgress, exportBackup, parseBackup, mergeDB, defaultDB, migrate,
 } from '../store.js';
 import { SEED_WORDS, makeWord, parseBulk, categoriesOf, CATEGORY_EMOJI } from '../words.js';
@@ -24,6 +24,11 @@ const EMOJI = ('👋 🙏 👍 👎 ✅ ❌ ❤️ 😀 😢 😡 😴 🤔 🥳
   '🟥 🟦 🟩 🟨 🟧 🟪 ⬛ ⬜ 🟫 1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 9️⃣ 🔟 👀 👂 👃 👄 ✋ 🦶 🧠').split(' ');
 
 let unlocked = false;
+
+// Which word groups are expanded in the editor. Per device, not synced; groups start closed.
+const OPEN_KEY = 'mamou-fr:open-groups';
+const openGroups = new Set((() => { try { return JSON.parse(localStorage.getItem(OPEN_KEY)) || []; } catch { return []; } })());
+function saveOpenGroups() { try { localStorage.setItem(OPEN_KEY, JSON.stringify([...openGroups])); } catch { /* storage off */ } }
 
 export async function render({ params }) {
   const arg = params[1];
@@ -52,7 +57,7 @@ function wordsTab(el) {
   const cats = categoriesOf(db.words);
   el.innerHTML = `
     <div class="panel">
-      <p style="margin-top:0">These are the words every player studies, in this order. <b>Editing a word keeps the kids' progress.</b> Turn a whole group off to pause it.</p>
+      <p style="margin-top:0">These are the words every player studies, in this order. Tap a group to open it; use its ↑ ↓ to move the whole group. <b>Editing a word keeps the kids' progress.</b> Turn a whole group off to pause it.</p>
       <div class="row">
         <button class="btn primary" id="add">＋ Add a word</button>
         <button class="btn" id="bulk">📋 Paste a list</button>
@@ -60,14 +65,21 @@ function wordsTab(el) {
       </div>
       <p class="muted" style="margin-bottom:0;font-size:.9rem">${db.words.length} words · ${cats.length} groups · <span class="g-m">blue = masculine</span> · <span class="g-f">red = feminine</span></p>
     </div>
-    ${cats.map(cat => {
+    ${cats.length > 1 ? `<div class="row" style="margin-top:14px"><button class="btn small" id="open-all">▾ Open all</button><button class="btn small" id="close-all">▸ Close all</button></div>` : ''}
+    ${cats.map((cat, ci) => {
       const on = !db.disabledCats.includes(cat);
       const ws = db.words.filter(w => w.cat === cat);
+      const open = openGroups.has(cat);
       return `<div class="panel cat-block ${on ? '' : 'off'}">
-        <div class="row between">
-          <h3 style="margin:0">${CATEGORY_EMOJI[cat] || '📁'} ${e(cat)} <span class="muted" style="font-weight:400">(${ws.length})</span></h3>
-          <label class="switch"><input type="checkbox" data-cat="${e(cat)}" ${on ? 'checked' : ''}><span class="track"></span>${on ? 'On' : 'Paused'}</label>
+        <div class="cat-head-row">
+          <button class="cat-toggle" data-toggle="${e(cat)}" aria-expanded="${open}"><span class="caret" aria-hidden="true">${open ? '▾' : '▸'}</span> ${CATEGORY_EMOJI[cat] || '📁'} ${e(cat)} <span class="muted" style="font-weight:400">(${ws.length})</span></button>
+          <span class="cat-actions">
+            <button class="btn small icon" data-cat-up="${e(cat)}" aria-label="Move group up" ${ci === 0 ? 'disabled' : ''}>↑</button>
+            <button class="btn small icon" data-cat-down="${e(cat)}" aria-label="Move group down" ${ci === cats.length - 1 ? 'disabled' : ''}>↓</button>
+            <label class="switch"><input type="checkbox" data-cat="${e(cat)}" ${on ? 'checked' : ''}><span class="track"></span>${on ? 'On' : 'Paused'}</label>
+          </span>
         </div>
+        <div class="cat-words" ${open ? '' : 'hidden'}>
         ${ws.map(w => `<div class="word-row">
           <span class="we">${e(w.emoji || '·')}</span>
           <div class="wt"><div class="wf ${genderClass(w)}">${e(w.fr)} ${genderTag(w)}</div><div class="wen">${e(w.en)}${w.note ? ' · 💡' : ''}</div></div>
@@ -78,6 +90,7 @@ function wordsTab(el) {
             <button class="btn small icon" data-del="${e(w.id)}" aria-label="Delete">🗑️</button>
           </div>
         </div>`).join('')}
+        </div>
       </div>`;
     }).join('')}
     <div class="panel danger-zone">
@@ -102,6 +115,23 @@ function wordsTab(el) {
     db.disabledCats = c.checked ? db.disabledCats.filter(x => x !== cat) : [...db.disabledCats, cat];
     app.save();
     rerender();
+  });
+  el.querySelector('#open-all')?.addEventListener('click', () => { cats.forEach(c => openGroups.add(c)); saveOpenGroups(); rerender(); });
+  el.querySelector('#close-all')?.addEventListener('click', () => { openGroups.clear(); saveOpenGroups(); rerender(); });
+  el.addEventListener('click', ev => {
+    const tg = ev.target.closest('[data-toggle]');
+    if (tg) {
+      const cat = tg.dataset.toggle;
+      const open = !openGroups.has(cat);
+      if (open) openGroups.add(cat); else openGroups.delete(cat);
+      saveOpenGroups();
+      tg.setAttribute('aria-expanded', String(open));
+      tg.querySelector('.caret').textContent = open ? '▾' : '▸';
+      tg.closest('.cat-block').querySelector('.cat-words').hidden = !open;
+      return;
+    }
+    const mv = ev.target.closest('[data-cat-up],[data-cat-down]');
+    if (mv && moveCategory(db, mv.dataset.catUp ?? mv.dataset.catDown, mv.dataset.catUp != null ? -1 : 1)) { app.save(); rerender(); }
   });
   el.addEventListener('click', async ev => {
     const t = ev.target.closest('[data-edit],[data-del],[data-up],[data-down]'); if (!t) return;
@@ -167,6 +197,7 @@ async function wordForm(word = null) {
   });
   if (!ok) return;
   if (!v.fr.trim() || !v.en.trim()) { toast('French and English are both needed', { icon: '⚠️' }); return; }
+  openGroups.add(v.cat.trim() || (word && word.cat) || 'Mes mots'); saveOpenGroups();
   if (word) {
     const w = { ...word, fr: v.fr.trim(), en: v.en.trim(), emoji: v.emoji.trim(), cat: v.cat.trim() || word.cat };
     const g = genderOf(w.fr, v.g || null);
@@ -211,6 +242,7 @@ manger, to eat</pre>
   });
   if (!ok) return;
   const { words } = parseBulk(text, cat.trim() || 'Mes mots');
+  openGroups.add(cat.trim() || 'Mes mots'); saveOpenGroups();
   let added = 0, skipped = 0;
   for (const d of words) {
     if (db.words.some(x => x.fr.trim().toLowerCase() === d.fr.trim().toLowerCase())) { skipped++; continue; }

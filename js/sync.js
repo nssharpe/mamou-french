@@ -67,7 +67,7 @@ function count(b, l, r) {
 }
 
 const COUNTERS = ['reviews', 'correct', 'perfect', 'accentOk', 'penduWins', 'duelWins', 'games', 'shopBuys'];
-const MAXES = ['bestCombo', 'speedBest', 'mascotTaps'];
+const MAXES = ['bestCombo', 'speedBest', 'verbBest', 'mascotTaps'];
 
 function mergeDays(b = {}, l = {}, r = {}) {
   const out = {};

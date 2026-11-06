@@ -30,7 +30,7 @@ export function newProgress() {
     hubUnits: 0, // qualifying cards not yet turned into family-hub tickets (the remainder under one ticket)
     stats: {
       reviews: 0, correct: 0, bestCombo: 0, perfect: 0, accentOk: 0, wordsLearned: 0,
-      memoryBest: null, speedBest: 0, penduWins: 0, duelWins: 0, games: 0, mascotTaps: 0, shopBuys: 0,
+      memoryBest: null, speedBest: 0, verbBest: 0, penduWins: 0, duelWins: 0, games: 0, mascotTaps: 0, shopBuys: 0,
     },
     prefs: { ...DEFAULT_PREFS },
     seenLevel: 1,
@@ -178,6 +178,19 @@ export function moveWord(db, id, delta) {
   if (i < 0 || j < 0 || j >= db.words.length) return;
   const [w] = db.words.splice(i, 1);
   db.words.splice(j, 0, w);
+}
+
+// Move a whole group of words one place up (dir -1) or down (dir 1). Groups are
+// ordered by their first word, so this regroups the list with each group's words
+// together, in their existing order. Returns false if the group can't move.
+export function moveCategory(db, cat, dir) {
+  const cats = [];
+  for (const w of db.words) if (!cats.includes(w.cat)) cats.push(w.cat);
+  const i = cats.indexOf(cat), j = i + dir;
+  if (i < 0 || j < 0 || j >= cats.length) return false;
+  [cats[i], cats[j]] = [cats[j], cats[i]];
+  db.words = cats.flatMap(c => db.words.filter(w => w.cat === c));
+  return true;
 }
 
 // ---------- sharing a word list by link ----------

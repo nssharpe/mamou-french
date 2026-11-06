@@ -11,7 +11,7 @@ Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
   - All data lives under the single key `mamou-fr:v1` (`js/store.js`).
   - The service worker touches only caches that start with `mamou-fr-`.
 - **Light theme only** (`color-scheme: light`). Text/background pairs must pass WCAG AA. The tokens at the top of `css/app.css` list their contrast ratios. Gold (`--or`) and flag red (`--rouge-flag`) are never used as text colors.
-- **Pure logic stays pure.** `srs.js`, `answer.js`, `session.js`, `progress.js`, `store.js`, `words.js`, `data.js` and `util.js` must not touch the DOM at import time, because `npm test` imports them in node.
+- **Pure logic stays pure.** `srs.js`, `answer.js`, `verbs.js`, `session.js`, `progress.js`, `store.js`, `words.js`, `data.js` and `util.js` must not touch the DOM at import time, because `npm test` imports them in node.
 - **New JS files** must be added to the `SHELL` list in `sw.js` so they work offline.
 - **Changing cached files:** bump `CACHE` in `sw.js` (`mamou-fr-vN`) when changing them in a way that needs a clean cache. Network-first means it's rarely needed.
 
@@ -37,6 +37,7 @@ Repo: https://github.com/nssharpe/mamou-french (deploys from `main`, root).
 | `js/hubtickets.js` | Family-hub tickets: `cardsToTickets` (1 ticket per N qualifying cards, remainder in `prog.hubUnits`), kid mapping (`p-zyler`/`p-kadyn` to `zyler`/`kadyn`), `reportHub`. Hub code in `mamou-fr:hub`, cached rates in `mamou-fr:hub-settings`, outbox in `mamou-fr:hub-outbox`. Qualifying card: quiz mode, correct first try, not the check right after a new-word intro. |
 | `js/screens/*` | One module per screen, exporting `render({pid, arg, params})`. It may return a cleanup function. |
 | `js/games/*` | Games started from `screens/games.js` via `start(el, ctx)`. |
+| `js/verbs.js` | Present tense of regular -er/-ir verbs: verb bank, `conjugate`, j' elision, `checkVerb` (level 1 = verb only, level 2 = pronoun + verb), `makeRound`. Used by `games/verbes.js`, which needs no word pool (`noPool`). |
 
 ## Data model (`mamou-fr:v1`)
 
